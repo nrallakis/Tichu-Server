@@ -6,9 +6,6 @@ import gr.nrallakis.tichu.core.AccountManager;
 import gr.nrallakis.tichu.server.game.Player;
 import gr.nrallakis.tichu.server.game.Room;
 
-/**
- * Created by nrallakis on 22/1/2016.
- */
 public class PacketHandler {
 
     private TichuServer server;
@@ -37,6 +34,17 @@ public class PacketHandler {
         else if (object instanceof Packets.GetRooms) {
             getRooms(connection);
         }
+        else if (object instanceof Packets.GetRoomPlayers) {
+            getRoomPlayers(connection, (Packets.GetRoomPlayers) object);
+        }
+    }
+
+    private void getRoomPlayers(Connection connection, Packets.GetRoomPlayers object) {
+        //Find the room of the connection
+        Room roomToGetPlayers = server.getRoomManager()
+                .getRoom(object.roomId);
+        System.out.println(object.roomId);
+        roomToGetPlayers.updatePlayerStates();
     }
 
     private void getRooms(Connection connection) {
@@ -68,9 +76,6 @@ public class PacketHandler {
 
         if (accepted) {
             room.updatePlayerStates();
-            Packets.PlayersInfo infoPacket = new Packets.PlayersInfo();
-            infoPacket.playerInfos = room.playersToJson();
-            connection.sendTCP(infoPacket);
         }
     }
 
@@ -78,6 +83,7 @@ public class PacketHandler {
         String name = object.name;
         Room room = new Room(name);
         room.addPlayer(new Player(connection));
+        room.updatePlayerStates();
         server.getRoomManager().addRoom(room);
         server.roomListUpdated();
 

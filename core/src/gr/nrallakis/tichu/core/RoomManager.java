@@ -3,6 +3,7 @@ package gr.nrallakis.tichu.core;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.esotericsoftware.kryonet.Connection;
 
 import gr.nrallakis.tichu.networking.TichuServer;
 import gr.nrallakis.tichu.server.game.Room;
@@ -32,6 +33,14 @@ public class RoomManager {
     public void removeRoom(int roomIndex) {
         rooms.removeIndex(roomIndex);
         server.roomListUpdated();
+    }
+
+    public Room getRoomContaining(Connection connection) {
+        String id = connection.toString();
+        for (Room room : rooms) {
+            if (room.contains(id)) return room;
+        }
+        return null;
     }
 
     public Array<Room> getRooms() {

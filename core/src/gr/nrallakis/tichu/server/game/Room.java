@@ -1,12 +1,17 @@
 package gr.nrallakis.tichu.server.game;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
+
+import gr.nrallakis.tichu.networking.Packets;
 import gr.nrallakis.tichu.networking.Packets.GameStarted;
-import gr.nrallakis.tichu.networking.Packets.PlayersInfo;
 
 public class Room {
 
@@ -36,37 +41,44 @@ public class Room {
             else if (players[2] == null) players[2] = player;
             else if (players[3] == null) players[3] = player;
             objectSpace.addConnection(player.getConnection());
-            updatePlayerStates();
         }
     }
 
     /** Sends the room players status to each player on the room */
     public void updatePlayerStates() {
         //Broadcast the players information to the room
-        PlayersInfo packet = new PlayersInfo();
-        packet.playerInfos = playersToJson();
-        System.out.println(packet.playerInfos);
-        broadcast(packet);
+        Packets.RoomPlayers packet = new Packets.RoomPlayers();
+        for (int playerIndex = 0; playerIndex < players.length; playerIndex++) {
+            Player player = players[playerIndex];
+            if (player == null) continue;
+            sendRoomPlayersTo(playerIndex);
+        }
     }
 
-    public String playersToJson() {
-        Json json = new Json();
-        json.setSerializer(Player.class, new Json.Serializer<Player>() {
-            @Override
-            public void write(Json json, Player player, @SuppressWarnings("rawtypes") Class knownType) {
-                json.writeObjectStart();
-                json.writeValue("name", player.getName());
-                json.writeValue("points", player.getPoints());
-                json.writeValue("id", player.getId());
-                json.writeObjectEnd();
-            }
+    /* Sends all the players excluding the one sending
+     * The json is sent to the orientation of the player */
+    private void sendRoomPlayersTo(int playerIndex) {
+        Player player = players[playerIndex];
+        ArrayList<Player> playerList = new ArrayList<>();
+        playerList.addAll(Arrays.asList(players));
+        Collections.rotate(playerList, -playerIndex);
+        playerList.remove(0);
 
-            @Override
-            public Player read(Json json, JsonValue jsonData, @SuppressWarnings("rawtypes") Class type) {
-                return null;
-            }
-        });
-        return json.toJson(players);
+        Packets.RoomPlayers packet = new Packets.RoomPlayers();
+        Player rightPlayer = playerList.get(0);
+        if (rightPlayer != null) {
+            packet.rightPlayerJson = rightPlayer.toJson();
+        }
+        Player topPlayer = playerList.get(1);
+        if (topPlayer != null) {
+            packet.topPlayerJson = topPlayer.toJson();
+        }
+        Player leftPlayer = playerList.get(2);
+        if (leftPlayer != null) {
+            packet.leftPlayerJson = leftPlayer.toJson();
+        }
+
+        player.getConnection().sendTCP(packet);
     }
 
     public void removePlayer(Connection player) {
@@ -149,6 +161,12 @@ public class Room {
 
     @Override
     public boolean equals(Object obj) {
+        if (!(obj instanceof Room)) {
+            return false;
+        }
+        if (!(obj.getClass().equals(this.getClass()))) {
+            return false;
+        }
         Room other = (Room) obj;
         return this.getId() == other.getId();
     }

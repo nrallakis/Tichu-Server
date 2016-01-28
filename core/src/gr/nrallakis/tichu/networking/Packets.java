@@ -61,32 +61,31 @@ public class Packets {
         public int id;
     }
 
-    public static class PlayersInfo {
-        public String playerInfos;
+    public static class RoomPlayers {
+        public String rightPlayerJson, topPlayerJson, leftPlayerJson;
     }
 
-    public static class GetPlayersInfo {
-    }
+    public static class GetRoomPlayers { public int roomId; }
 
     public static void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
         ObjectSpace.registerClasses(kryo);
-        kryo.register(CreateRoom.class);
-        kryo.register(RoomInfo.class);
-        kryo.register(JoinRoom.class);
-        kryo.register(JoinAccepted.class);
-        kryo.register(StartGame.class);
-        kryo.register(GameStarted.class);
-        kryo.register(Login.class);
-        kryo.register(LoginSuccesful.class);
-        kryo.register(GetRooms.class);
-        kryo.register(Rooms.class);
-        kryo.register(GuestInfo.class);
-        kryo.register(GuestLogin.class);
-        kryo.register(GetStatsPacket.class);
-        kryo.register(RoomCreated.class);
-        kryo.register(PlayersInfo.class);
-        kryo.register(GetPlayersInfo.class);
+        kryo.register(Packets.CreateRoom.class);
+        kryo.register(Packets.RoomInfo.class);
+        kryo.register(Packets.JoinRoom.class);
+        kryo.register(Packets.JoinAccepted.class);
+        kryo.register(Packets.StartGame.class);
+        kryo.register(Packets.GameStarted.class);
+        kryo.register(Packets.Login.class);
+        kryo.register(Packets.LoginSuccesful.class);
+        kryo.register(Packets.GetRooms.class);
+        kryo.register(Packets.Rooms.class);
+        kryo.register(Packets.GuestInfo.class);
+        kryo.register(Packets.GuestLogin.class);
+        kryo.register(Packets.RoomCreated.class);
+        kryo.register(Packets.RoomPlayers.class);
+        kryo.register(Packets.GetRoomPlayers.class);
         kryo.register(IGame.class);
+        kryo.register(String.class);
     }
 }

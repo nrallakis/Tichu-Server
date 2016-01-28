@@ -10,23 +10,35 @@ public class CombinationFinder {
         return null;
     }
 
+    public static boolean isPair(Array<Card> sCards) {
+        if (sCards.size !=2) return false;
+        return sCards.get(0).getRank() == sCards.get(1).getRank();
+    }
+
+    public static boolean isTriple(Array<Card> sCards) {
+        if (sCards.size != 3) return false;
+        return sCards.get(0).getRank() == sCards.get(1).getRank()
+            && sCards.get(1).getRank() == sCards.get(2).getRank();
+    }
+
     public static boolean arePairs(Array<Card> sCards) {
-        if (sCards.size == 2)
-            return sCards.get(0).getRank() == sCards.get(1).getRank();
-        if (sCards.size % 2 == 0) {
-            for (int i = 0; i < sCards.size / 2; i++) {
-                if (sCards.get(i).getRank() != sCards.get(i + 1).getRank()) {
-                    return false;
-                }
+        if (sCards.size < 4) return false;
+        if (sCards.size % 2 != 0) return false;
+
+        int nextPairRank = sCards.get(2).getRank();
+        for (int i = 0; i < sCards.size; i += 2) {
+            if (sCards.get(i).getRank() != sCards.get(i+1).getRank()) {
+                return false;
             }
-            return true;
+            if (sCards.get(i).getRank() != nextPairRank)
+            nextPairRank = sCards.get(i).getRank() + 1;
         }
-        return false;
+        return true;
+
     }
 
     public static boolean hasBomb(Array<Card> hand) {
         if (hand.size < 4) return false;
-        hand.sort();
         if (hand.size == 4) {
             return isBomb(hand);
         }
