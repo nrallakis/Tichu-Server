@@ -2,24 +2,25 @@ package gr.nrallakis.tichu.server.game;
 
 import com.badlogic.gdx.utils.Array;
 
-public final class Combination {
+public final class CardCombination {
 
-    private static int PAIR = 0,
+    public static int PAIR = 0,
                        FULLHOUSE = 1,
-                       STEPS = 2,
-                       QAEDA = 3,
+                       STRAIGHT_PAIRS = 2,
+                       STRAIGHT = 3,
                        TRIPLE = 4,
                        BOMB = 5;
 
     private Array<Card> cards;
     private int type;
+
+    /** The value of the combination.
+     * Used to compare to same type combination
+     * The value uses a *2 scalar to avoid float
+     * usage with phoenix +0.5 rank */
     private int value;
 
-    /* The value of the Combination
-    * A combination with a greater value
-    * is a greater combination. */
-
-    public Combination(int type, int value, Array<Card> sCards) {
+    public CardCombination(int type, int value, Array<Card> sCards) {
         this.type = type;
         this.value = value;
         this.cards = sCards;
@@ -33,7 +34,7 @@ public final class Combination {
         return value;
     }
 
-    public boolean isStrongerThan(Combination comb) {
+    public boolean isStrongerThan(CardCombination comb) {
         if (this.type != comb.getType()) return false;
         return this.value > comb.getValue();
     }

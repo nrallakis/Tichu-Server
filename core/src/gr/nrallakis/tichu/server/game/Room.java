@@ -1,14 +1,11 @@
 package gr.nrallakis.tichu.server.game;
 
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
 
 import gr.nrallakis.tichu.networking.Packets;
 import gr.nrallakis.tichu.networking.Packets.GameStarted;
@@ -17,16 +14,20 @@ public class Room {
 
     private static int nextId;
 
+    private int id;
     private Player[] players;
     private String name;
     private Game game;
-    private int id;
+    private int timeToPlay;
+    private int winningScore;
 
     /** Responsible for rmi connection */
     private ObjectSpace objectSpace;
 
-    public Room(String name) {
-        this.name = name;
+    public Room(RoomProperties roomProperties) {
+        this.name = roomProperties.name;
+        this.winningScore = roomProperties.winningScore;
+        this.timeToPlay = roomProperties.secondsToPlay;
         this.players = new Player[4];
         this.id = ++nextId;
         objectSpace = new ObjectSpace();
@@ -47,7 +48,6 @@ public class Room {
     /** Sends the room players status to each player on the room */
     public void updatePlayerStates() {
         //Broadcast the players information to the room
-        Packets.RoomPlayers packet = new Packets.RoomPlayers();
         for (int playerIndex = 0; playerIndex < players.length; playerIndex++) {
             Player player = players[playerIndex];
             if (player == null) continue;

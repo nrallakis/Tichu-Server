@@ -4,22 +4,24 @@ import com.badlogic.gdx.utils.Timer;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-public class Game implements IGame {
+public class Game implements GamePlayerActions {
 
-    private Combination lastCombination;
-    private Deck deck;
-    private Timer time;
-    private int[] score;
+    private boolean hasStarted;
+
+    private int[] teamsScores;
     private int round;
     private int turn;
-    private String lastPlayFrom;
-    private boolean hasStarted;
-    /* The players */
+
     private Player[] players;
     private Player turnPlayer;
 
-    /* Interface to send players game states and actions */
-    private IGameActions gameActions;
+    private Timer time;
+    private Deck deck;
+    private CardCombination lastCombination;
+    private String lastPlayFrom;
+
+    /* Interface to send players gameInformer states and actions */
+    private GameChangesListener gameInformer;
 
     public Game(Player[] players) {
         this.players = players;
@@ -27,7 +29,7 @@ public class Game implements IGame {
 		for (int i = 0; i < 4; i++) {
 			objectSpace.addConnection(players[i].getConnection());
 		}
-        score = new int[2];
+        teamsScores = new int[2];
     }
 
     public void init(Connection[] players) {
@@ -59,7 +61,7 @@ public class Game implements IGame {
 
     public void endRound() {
         //Add points to each team
-        //If one team exceeds the winning score :
+        //If one team exceeds the winning teamsScores :
         //Call endGame()
         //Else : call startRound()
     }
@@ -75,46 +77,53 @@ public class Game implements IGame {
         //with all the 14 cards
     }
 
-    public void nextTurn() {
+    private void nextTurn() {
         //Increment turn (0-3)
         turn = ++turn % 4;
         turnPlayer = players[turn];
     }
 
     @Override
-    public void pass(String id) {
-        //Increment turn
-        System.out.println("Player: " + id + " PASSED");
+    public void pass(String playerId) {
+        if (!isPlayerTurn(playerId)) return;
+        nextTurn();
+        System.out.println("Player: " + playerId + " PASSED");
     }
 
     @Override
-    public void playCards(String id, String comb) {
-        //Check if the new combination is stronger than the last
-        //Increment round
+    public void callTichu(String playerId) {
+
+    }
+
+    @Override
+    public void callGrandTichu(String playerId) {
+
+    }
+
+    @Override
+    public void exchangeThreeCards(String playerId, Card left, Card top, Card right) {
+
+    }
+
+    @Override
+    public void bomb(String playerId, CardCombination combination) {
+
+    }
+
+    @Override
+    public void playCards(String playerId, CardCombination newCombination) {
+        if (!isPlayerTurn(playerId)) return;
+        if (newCombination.isStrongerThan(lastCombination)) {
+            lastCombination = newCombination;
+            gameInformer.playerPlayedCards(newCombination);
+        }
+        nextTurn();
         System.out.println("PLAYED CARDS");
     }
 
-    @Override
-    public void leave(String id) {
-        //Call endRound()
-        //Call endGame()
-        System.out.println("LEAVED");
+    private boolean isPlayerTurn(String playerId) {
+        return players[turn].getId().equals(playerId);
     }
 
-    private Player getPlayer(String id) {
-        for (Player p : players) {
-            if (p.getId().equals(id)) return p;
-        }
-        return null;
-    }
-
-    public boolean hasStarted() {
-        return hasStarted;
-    }
-
-    @Override
-    public void giveCards(String threeCards) {
-        /** */
-    }
 
 }

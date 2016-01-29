@@ -5,12 +5,15 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import gr.nrallakis.tichu.server.game.IGame;
+import gr.nrallakis.tichu.server.game.GamePlayerActions;
 
 public class Packets {
 
     public static class CreateRoom {
-        public String name;
+        public String roomName;
+        public String roomPassword;
+        public int winningScore;
+        public int timeToPlay;
     }
 
     public static class RoomInfo {
@@ -32,7 +35,7 @@ public class Packets {
         public String username, id;
     }
 
-    public static class LoginSuccesful {
+    public static class LoginSuccessful {
     }
 
     public static class Rooms {
@@ -77,7 +80,7 @@ public class Packets {
         kryo.register(Packets.StartGame.class);
         kryo.register(Packets.GameStarted.class);
         kryo.register(Packets.Login.class);
-        kryo.register(Packets.LoginSuccesful.class);
+        kryo.register(LoginSuccessful.class);
         kryo.register(Packets.GetRooms.class);
         kryo.register(Packets.Rooms.class);
         kryo.register(Packets.GuestInfo.class);
@@ -85,7 +88,7 @@ public class Packets {
         kryo.register(Packets.RoomCreated.class);
         kryo.register(Packets.RoomPlayers.class);
         kryo.register(Packets.GetRoomPlayers.class);
-        kryo.register(IGame.class);
+        kryo.register(GamePlayerActions.class);
         kryo.register(String.class);
     }
 }

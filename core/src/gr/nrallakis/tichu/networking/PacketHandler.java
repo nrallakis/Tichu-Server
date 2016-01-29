@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Connection;
 import gr.nrallakis.tichu.core.AccountManager;
 import gr.nrallakis.tichu.server.game.Player;
 import gr.nrallakis.tichu.server.game.Room;
+import gr.nrallakis.tichu.server.game.RoomProperties;
 
 public class PacketHandler {
 
@@ -79,17 +80,22 @@ public class PacketHandler {
         }
     }
 
-    private void createRoom(Connection connection, Packets.CreateRoom object) {
-        String name = object.name;
-        Room room = new Room(name);
+    private void createRoom(Connection connection, Packets.CreateRoom packet) {
+        RoomProperties properties = new RoomProperties();
+        properties.name = packet.roomName;
+        properties.winningScore = packet.winningScore;
+        properties.secondsToPlay = packet.timeToPlay;
+
+        Room room = new Room(properties);
         room.addPlayer(new Player(connection));
         room.updatePlayerStates();
+
         server.getRoomManager().addRoom(room);
         server.roomListUpdated();
 
-        Packets.RoomCreated packet = new Packets.RoomCreated();
-        packet.id = room.getId();
-        connection.sendTCP(packet);
+        Packets.RoomCreated packet2 = new Packets.RoomCreated();
+        packet2.id = room.getId();
+        connection.sendTCP(packet2);
     }
 
     private void guestLogin(Connection connection, Packets.GuestLogin object) {
@@ -105,7 +111,7 @@ public class PacketHandler {
         }
         AccountManager.getInstance().login(id);
         connection.setName(id);
-        Packets.LoginSuccesful packet = new Packets.LoginSuccesful();
+        Packets.LoginSuccessful packet = new Packets.LoginSuccessful();
         connection.sendTCP(packet);
     }
 
@@ -114,7 +120,7 @@ public class PacketHandler {
         String id = object.id;
         connection.setName(id);
         AccountManager.getInstance().login(username, id);
-        Packets.LoginSuccesful packet = new Packets.LoginSuccesful();
+        Packets.LoginSuccessful packet = new Packets.LoginSuccessful();
         connection.sendTCP(packet);
     }
 }

@@ -4,9 +4,33 @@ import com.badlogic.gdx.utils.Array;
 
 import gr.nrallakis.tichu.utils.CardSorter;
 
-public class CombinationFinder {
+public class CardCombinationFinder {
 
-    public Combination findCombination(Array<Card> sCards) {
+    public static CardCombination findCombination(Array<Card> sCards) {
+        final int scalar = 2;
+        if (isPair(sCards)) {
+            return new CardCombination(CardCombination.PAIR, sCards.first().getRank()*scalar, sCards);
+        }
+        if (isTriple(sCards)) {
+            return new CardCombination(CardCombination.TRIPLE, sCards.first().getRank()*scalar, sCards);
+        }
+        if (isFullHouse(sCards)) {
+            // We first assume that the triple is first
+            int fullHouseValue = sCards.get(0).getRank();
+            if (isTriple(sCards, 2)) {
+                fullHouseValue = sCards.get(2).getRank();
+            }
+            return new CardCombination(CardCombination.FULLHOUSE, fullHouseValue*scalar, sCards);
+        }
+        if (isBomb(sCards)) {
+            return new CardCombination(CardCombination.BOMB, sCards.first().getRank()*scalar, sCards);
+        }
+        if (areStraightPairs(sCards)) {
+            return new CardCombination(CardCombination.STRAIGHT_PAIRS, sCards.first().getRank()*scalar, sCards);
+        }
+        if (isStraight(sCards)) {
+            return new CardCombination(CardCombination.STRAIGHT, sCards.first().getRank()*scalar, sCards);
+        }
         return null;
     }
 
@@ -18,32 +42,37 @@ public class CombinationFinder {
     public static boolean isTriple(Array<Card> sCards) {
         if (sCards.size != 3) return false;
         return sCards.get(0).getRank() == sCards.get(1).getRank()
-            && sCards.get(1).getRank() == sCards.get(2).getRank();
+                && sCards.get(1).getRank() == sCards.get(2).getRank();
     }
 
-    public static boolean arePairs(Array<Card> sCards) {
+    public static boolean isTriple(Array<Card> sCards, int start) {
+        if (start + 2 > sCards.size) return false;
+        return sCards.get(start).getRank() == sCards.get(start+1).getRank()
+                && sCards.get(start+1).getRank() == sCards.get(start+2).getRank();
+    }
+
+    public static boolean areStraightPairs(Array<Card> sCards) {
         if (sCards.size < 4) return false;
         if (sCards.size % 2 != 0) return false;
 
-        int nextPairRank = sCards.get(2).getRank();
-        for (int i = 0; i < sCards.size; i += 2) {
+        CardSorter.sortByRank(sCards);
+
+        /* Check if are all pairs */
+        for (int i = 0; i < sCards.size; i+=2) {
             if (sCards.get(i).getRank() != sCards.get(i+1).getRank()) {
                 return false;
             }
-            if (sCards.get(i).getRank() != nextPairRank)
-            nextPairRank = sCards.get(i).getRank() + 1;
+        }
+
+        /* Check for increasing values */
+        int nextRank = sCards.get(2).getRank();
+        for (int i = 0; i < sCards.size; i+=2) {
+            if (sCards.get(i).getRank() + 1 != nextRank) {
+                return false;
+            }
+            nextRank++;
         }
         return true;
-
-    }
-
-    public static boolean hasBomb(Array<Card> hand) {
-        if (hand.size < 4) return false;
-        if (hand.size == 4) {
-            return isBomb(hand);
-        }
-        //TODO: continue
-        return false;
     }
 
     public static boolean isFullHouse(Array<Card> sCards) {
@@ -84,7 +113,7 @@ public class CombinationFinder {
         return sum == 6;
     }
 
-     /* There are two type of bombs:
+     /** There are two type of bombs:
     * i) 4 cards same rank with different types
     * ii) A straight of the same type */
     public static boolean isBomb(Array<Card> sCards) {
@@ -109,6 +138,8 @@ public class CombinationFinder {
         }
         return true;
     }
+
+
 
     /**
      * @return the points for a card trick

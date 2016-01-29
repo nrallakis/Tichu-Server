@@ -13,7 +13,7 @@ public class Player {
     public boolean ready;
     private String id;
     private Array<Card> hand;
-    private IGameActions gameActions;
+    private GameChangesListener gameActions;
 
     public Player(Connection c) {
         this.connection = c;
