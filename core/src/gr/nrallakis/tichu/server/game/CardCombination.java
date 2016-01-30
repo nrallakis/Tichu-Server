@@ -5,11 +5,14 @@ import com.badlogic.gdx.utils.Array;
 public final class CardCombination {
 
     public static int PAIR = 0,
-                       FULLHOUSE = 1,
-                       STRAIGHT_PAIRS = 2,
-                       STRAIGHT = 3,
-                       TRIPLE = 4,
-                       BOMB = 5;
+                    FULLHOUSE = 1,
+                    STRAIGHT_PAIRS = 2,
+                    STRAIGHT = 3,
+                    TRIPLE = 4,
+                    STRAIGHT_BOMB = 5,
+                    COLOR_BOMB = 6;
+
+
 
     private Array<Card> cards;
     private int type;
@@ -34,8 +37,21 @@ public final class CardCombination {
         return value;
     }
 
+    public Array<Card> getCards() {
+        return cards;
+    }
+
+    public int getLength() {
+        return cards.size;
+    }
+
     public boolean isStrongerThan(CardCombination comb) {
-        if (this.type != comb.getType()) return false;
+        if (this.type == STRAIGHT_BOMB && comb.getType() == COLOR_BOMB) {
+            return true;
+        }
+        if (this.type != comb.getType()) {
+            return false;
+        }
         return this.value > comb.getValue();
     }
 }

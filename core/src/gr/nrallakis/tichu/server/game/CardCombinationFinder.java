@@ -22,8 +22,11 @@ public class CardCombinationFinder {
             }
             return new CardCombination(CardCombination.FULLHOUSE, fullHouseValue*scalar, sCards);
         }
-        if (isBomb(sCards)) {
-            return new CardCombination(CardCombination.BOMB, sCards.first().getRank()*scalar, sCards);
+        if (isColorBomb(sCards)) {
+            return new CardCombination(CardCombination.COLOR_BOMB, sCards.first().getRank()*scalar, sCards);
+        }
+        if (isStraightBomb(sCards)) {
+            return new CardCombination(CardCombination.STRAIGHT_BOMB, sCards.first().getRank()*scalar, sCards);
         }
         if (areStraightPairs(sCards)) {
             return new CardCombination(CardCombination.STRAIGHT_PAIRS, sCards.first().getRank()*scalar, sCards);
@@ -113,13 +116,12 @@ public class CardCombinationFinder {
         return sum == 6;
     }
 
-     /** There are two type of bombs:
-    * i) 4 cards same rank with different types
-    * ii) A straight of the same type */
-    public static boolean isBomb(Array<Card> sCards) {
-        boolean isFirstBomb = haveDifferentTypesEachOther(sCards);
-        boolean isSecondBomb = isStraight(sCards) && haveSameType(sCards);
-        return (isFirstBomb || isSecondBomb);
+    public static boolean isColorBomb(Array<Card> sCards) {
+        return haveDifferentTypesEachOther(sCards);
+    }
+
+    public static boolean isStraightBomb(Array<Card> sCards) {
+        return isStraight(sCards) && haveSameType(sCards);
     }
 
     public static boolean isStraight(Array<Card> sCards) {
