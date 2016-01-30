@@ -1,11 +1,13 @@
 package gr.nrallakis.tichu.tests;
 
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import gr.nrallakis.tichu.server.game.Card;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by nrallakis on 22/1/2016.

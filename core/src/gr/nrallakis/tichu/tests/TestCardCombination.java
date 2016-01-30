@@ -2,14 +2,14 @@ package gr.nrallakis.tichu.tests;
 
 import com.badlogic.gdx.utils.Array;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestCardCombination {
 

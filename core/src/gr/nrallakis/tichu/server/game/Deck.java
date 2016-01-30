@@ -2,9 +2,6 @@ package gr.nrallakis.tichu.server.game;
 
 import com.badlogic.gdx.utils.Array;
 
-/**
- * Created by Nicholas on 19/12/2015.
- */
 public class Deck {
 
     private Array<Card> cards;
