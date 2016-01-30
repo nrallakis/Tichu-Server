@@ -25,7 +25,7 @@ public class TestCardCombination {
     }
 
     @After
-    public void after() {
+    public void cleanUp() {
         cards = null;
         cards2 = null;
         one = null;
