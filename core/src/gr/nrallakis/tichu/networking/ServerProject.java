@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class ServerProject extends ApplicationAdapter {
 
-    TichuServer server;
+    private TichuServer server;
 
     @Override
     public void create() {

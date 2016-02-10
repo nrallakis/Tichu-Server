@@ -17,7 +17,7 @@ public class ServerListener extends Listener {
 
     public ServerListener(TichuServer server) {
         this.server = server;
-        packetHandler = new PacketHandler(server);
+        this.packetHandler = new PacketHandler(server);
     }
 
     @Override

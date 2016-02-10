@@ -4,15 +4,13 @@ import com.badlogic.gdx.utils.Array;
 
 public final class CardCombination {
 
-    public static int PAIR = 0,
-                    FULLHOUSE = 1,
-                    STRAIGHT_PAIRS = 2,
-                    STRAIGHT = 3,
-                    TRIPLE = 4,
-                    STRAIGHT_BOMB = 5,
-                    COLOR_BOMB = 6;
-
-
+    public static int PAIR = 0;
+    public static int FULLHOUSE = 1;
+    public static int STRAIGHT_PAIRS = 2;
+    public static int STRAIGHT = 3;
+    public static int TRIPLE = 4;
+    public static int STRAIGHT_BOMB = 5;
+    public static int COLOR_BOMB = 6;
 
     private Array<Card> cards;
     private int type;

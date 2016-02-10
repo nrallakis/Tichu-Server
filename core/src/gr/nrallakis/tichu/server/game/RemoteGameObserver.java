@@ -1,10 +1,9 @@
 package gr.nrallakis.tichu.server.game;
 
 /**
- * GameChangesListener is responsible for communicating with the players of the game
- * informing them about all game state changes.
+ * RemoteGameObserver is responsible for observing the players actions on the game
  */
-public interface GameChangesListener {
+public interface RemoteGameObserver {
 
     /**
      * Called when the player with turn passes.

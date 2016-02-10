@@ -20,8 +20,7 @@ public class Game implements GamePlayerActions {
     private CardCombination lastCombination;
     private String lastPlayFrom;
 
-    /* Interface to send players gameInformer states and actions */
-    private GameChangesListener gameInformer;
+    private RemoteGameObserverUpdater gameObserverUpdater;
 
     public Game(Player[] players) {
         this.players = players;
@@ -29,6 +28,7 @@ public class Game implements GamePlayerActions {
 		for (int i = 0; i < 4; i++) {
 			objectSpace.addConnection(players[i].getConnection());
 		}
+        
         teamsScores = new int[2];
     }
 
@@ -92,12 +92,12 @@ public class Game implements GamePlayerActions {
 
     @Override
     public void callTichu(String playerId) {
-
+        gameObserverUpdater.playerTichu(playerId);
     }
 
     @Override
     public void callGrandTichu(String playerId) {
-
+        gameObserverUpdater.playerGrandTichu(playerId);
     }
 
     @Override
@@ -115,15 +115,18 @@ public class Game implements GamePlayerActions {
         if (!isPlayerTurn(playerId)) return;
         if (newCombination.isStrongerThan(lastCombination)) {
             lastCombination = newCombination;
-            gameInformer.playerPlayedCards(newCombination);
+            gameObserverUpdater.playerPlayedCards(newCombination);
         }
         nextTurn();
         System.out.println("PLAYED CARDS");
     }
 
+    private Player playerWithTurn() {
+        return players[turn];
+    }
+
     private boolean isPlayerTurn(String playerId) {
         return players[turn].getId().equals(playerId);
     }
-
 
 }

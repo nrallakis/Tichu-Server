@@ -55,7 +55,7 @@ public class Room {
         }
     }
 
-    /* Sends all the players excluding the one sending
+    /** Sends all the players excluding the one sending
      * The json is sent to the orientation of the player */
     private void sendRoomPlayersTo(int playerIndex) {
         Player player = players[playerIndex];
@@ -171,9 +171,7 @@ public class Room {
         return this.getId() == other.getId();
     }
 
-    /** Send a packet to every player on the room.
-     * @param packet The packet to be sent */
-    private void broadcast(Object packet) {
+    private void broadcastPacket(Object packet) {
         for (Player player : players) {
             if (player == null) continue;
             player.getConnection().sendTCP(packet);
