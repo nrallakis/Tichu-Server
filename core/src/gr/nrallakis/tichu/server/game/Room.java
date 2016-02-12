@@ -171,10 +171,4 @@ public class Room {
         return this.getId() == other.getId();
     }
 
-    private void broadcastPacket(Object packet) {
-        for (Player player : players) {
-            if (player == null) continue;
-            player.getConnection().sendTCP(packet);
-        }
-    }
 }

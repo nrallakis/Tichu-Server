@@ -64,7 +64,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 3));
         hand.add(new Card(Card.BLACK, 2));
         hand.add(new Card(Card.BLUE, 2));
-        assertEquals(CardCombination.FULLHOUSE, CardCombinationFinder.findCombination(hand).getType());
+        assertEquals(CardCombination.FULL_HOUSE, CardCombinationFinder.findCombination(hand).getType());
     }
 
     @Test

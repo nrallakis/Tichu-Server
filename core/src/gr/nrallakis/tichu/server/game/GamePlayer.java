@@ -1,9 +1,11 @@
 package gr.nrallakis.tichu.server.game;
 
+import com.esotericsoftware.kryonet.Connection;
+
 /**
- * RemoteGameObserver is responsible for observing the players actions on the game
+ * GamePlayer is responsible for observing the players actions on the game
  */
-public interface RemoteGameObserver {
+public interface GamePlayer {
 
     /**
      * Called when the player with turn passes.
@@ -64,5 +66,7 @@ public interface RemoteGameObserver {
      * leaves from the game.
      */
     void playerLeft(String playerId);
+
+    Connection getConnection();
 
 }

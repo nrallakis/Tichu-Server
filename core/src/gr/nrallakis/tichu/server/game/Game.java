@@ -2,7 +2,6 @@ package gr.nrallakis.tichu.server.game;
 
 import com.badlogic.gdx.utils.Timer;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
 public class Game implements GamePlayerActions {
 
@@ -20,15 +19,10 @@ public class Game implements GamePlayerActions {
     private CardCombination lastCombination;
     private String lastPlayFrom;
 
-    private RemoteGameObserverUpdater gameObserverUpdater;
+    private GamePlayerUpdater gameObserverUpdater;
 
     public Game(Player[] players) {
         this.players = players;
-		ObjectSpace objectSpace = new ObjectSpace();
-		for (int i = 0; i < 4; i++) {
-			objectSpace.addConnection(players[i].getConnection());
-		}
-        
         teamsScores = new int[2];
     }
 
@@ -52,6 +46,7 @@ public class Game implements GamePlayerActions {
         round++;
 
         //Deal 8 cards to players
+
         //Wait for Grand Tichu call
         //Deal 6 cards to players
         //Wait for players to exchange cards

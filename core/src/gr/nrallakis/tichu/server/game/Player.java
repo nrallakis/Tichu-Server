@@ -7,13 +7,12 @@ import com.esotericsoftware.kryonet.Connection;
 
 import gr.nrallakis.tichu.core.AccountManager;
 
-public class Player implements RemoteGameObserver {
+public class Player implements GamePlayer {
 
     private Connection connection;
     public boolean ready;
     private String id;
     private Array<Card> hand;
-    private RemoteGameObserver remoteGameObserver;
 
     public Player(Connection c) {
         this.connection = c;
@@ -22,10 +21,6 @@ public class Player implements RemoteGameObserver {
 
     public void giveCard(Card card) {
         hand.add(card);
-    }
-
-    public RemoteGameObserver getRemoteGameObserver() {
-        return remoteGameObserver;
     }
 
     public String toJson() {
@@ -48,10 +43,6 @@ public class Player implements RemoteGameObserver {
         return json.toJson(this);
     }
 
-    public Connection getConnection() {
-        return connection;
-    }
-
     public String getId() {
         return id;
     }
@@ -66,12 +57,12 @@ public class Player implements RemoteGameObserver {
 
     @Override
     public void playerPassed() {
-        remoteGameObserver.playerPassed();
+//        connection.sendTCP(new PlayerPassed());
     }
 
     @Override
     public void exchangedCardsReceived(Card[] cards) {
-
+//        connection.se
     }
 
     @Override
@@ -112,5 +103,9 @@ public class Player implements RemoteGameObserver {
     @Override
     public void playerLeft(String playerId) {
 
+    }
+
+    public com.esotericsoftware.kryonet.Connection getConnection() {
+        return connection;
     }
 }

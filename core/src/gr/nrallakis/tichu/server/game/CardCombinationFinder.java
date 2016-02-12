@@ -20,7 +20,7 @@ public class CardCombinationFinder {
             if (isTriple(sCards, 2)) {
                 fullHouseValue = sCards.get(2).getRank();
             }
-            return new CardCombination(CardCombination.FULLHOUSE, fullHouseValue*scalar, sCards);
+            return new CardCombination(CardCombination.FULL_HOUSE, fullHouseValue*scalar, sCards);
         }
         if (isColorBomb(sCards)) {
             return new CardCombination(CardCombination.COLOR_BOMB, sCards.first().getRank()*scalar, sCards);

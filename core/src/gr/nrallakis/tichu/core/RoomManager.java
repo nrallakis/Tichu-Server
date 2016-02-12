@@ -7,6 +7,7 @@ import com.esotericsoftware.kryonet.Connection;
 
 import gr.nrallakis.tichu.networking.TichuServer;
 import gr.nrallakis.tichu.server.game.Room;
+import gr.nrallakis.tichu.server.game.RoomSerializer;
 
 public class RoomManager {
 
@@ -50,22 +51,7 @@ public class RoomManager {
     @SuppressWarnings("rawtypes")
     public String getRoomsData() {
         Json json = new Json();
-        json.setSerializer(Room.class, new Json.Serializer<Room>() {
-            @Override
-            public void write(Json json, Room room, Class knownType) {
-                json.writeObjectStart();
-                json.writeValue("name", room.getName());
-                json.writeValue("player_count", room.getPlayerCount());
-                json.writeValue("id", room.getId());
-                json.writeObjectEnd();
-            }
-
-            @Override
-            public Room read(Json json, JsonValue jsonData, Class type) {
-                return null;
-            }
-        });
-
+        json.setSerializer(Room.class, new RoomSerializer());
         return json.toJson(rooms);
     }
 

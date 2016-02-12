@@ -1,9 +1,16 @@
 package gr.nrallakis.tichu.server.game;
 
-/** Represents a single card with a rank and a type
- * Immutable class */
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
-public final class Card implements Comparable<Card> {
+/**
+ * Represents a single card with a rank and a type
+ * Immutable class
+ */
+
+public final class Card implements Comparable<Card>, KryoSerializable {
 
     public static final int GREEN = 0, RED = 1, BLUE = 2, BLACK = 3;
     public static final int J = 11, Q = 12, K = 13, A = 14;
@@ -11,6 +18,8 @@ public final class Card implements Comparable<Card> {
 
     private int rank;
     private int type;
+
+    private Card() {}
 
     public Card(int special) {
         this(special, 15);
@@ -70,5 +79,17 @@ public final class Card implements Comparable<Card> {
         result = prime * result + rank;
         result = prime * result + type;
         return result;
+    }
+
+    @Override
+    public void write(Kryo kryo, Output output) {
+        output.writeInt(rank);
+        output.writeInt(type);
+    }
+
+    @Override
+    public void read(Kryo kryo, Input input) {
+        this.rank = input.readInt();
+        this.type = input.readInt();
     }
 }

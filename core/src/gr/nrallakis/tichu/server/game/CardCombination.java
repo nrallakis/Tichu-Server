@@ -1,11 +1,15 @@
 package gr.nrallakis.tichu.server.game;
 
 import com.badlogic.gdx.utils.Array;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
-public final class CardCombination {
+public final class CardCombination implements KryoSerializable {
 
     public static int PAIR = 0;
-    public static int FULLHOUSE = 1;
+    public static int FULL_HOUSE = 1;
     public static int STRAIGHT_PAIRS = 2;
     public static int STRAIGHT = 3;
     public static int TRIPLE = 4;
@@ -20,6 +24,8 @@ public final class CardCombination {
      * The value uses a *2 scalar to avoid float
      * usage with phoenix +0.5 rank */
     private int value;
+
+    private CardCombination() {}
 
     public CardCombination(int type, int value, Array<Card> sCards) {
         this.type = type;
@@ -51,5 +57,19 @@ public final class CardCombination {
             return false;
         }
         return this.value > comb.getValue();
+    }
+
+    @Override
+    public void write(Kryo kryo, Output output) {
+        output.writeInt(type);
+        output.writeInt(value);
+        kryo.writeClassAndObject(output, cards.toArray(Card.class));
+    }
+
+    @Override
+    public void read(Kryo kryo, Input input) {
+        this.type = input.readInt();
+        this.value = input.readInt();
+        this.cards = new Array<Card>((Card[]) kryo.readClassAndObject(input));
     }
 }
