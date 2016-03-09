@@ -1,16 +1,11 @@
 package gr.nrallakis.tichu.server.game;
 
-import com.badlogic.gdx.utils.Array;
-
 public class GamePlayerUpdater {
 
-    private Array<GamePlayer> gamePlayers;
+    private GamePlayer[] gamePlayers;
 
-    public GamePlayerUpdater(Array<GamePlayer> gamePlayers) {
+    public GamePlayerUpdater(GamePlayer[] gamePlayers) {
         this.gamePlayers = gamePlayers;
-    }
-
-    public void dealEightCards() {
     }
 
     /**
@@ -18,6 +13,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void playerPassed() {
+        for (GamePlayer player : gamePlayers) {
+            player.playerPassed();
+        }
     }
 
     /**
@@ -32,6 +30,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void playerBombed(String playerId, CardCombination bomb) {
+        for (GamePlayer player : gamePlayers) {
+            player.playerBombed(playerId, bomb);
+        }
     }
 
     /**
@@ -39,6 +40,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void playerTichu(String playerId) {
+        for (GamePlayer player : gamePlayers) {
+            player.playerTichu(playerId);
+        }
     }
 
     /**
@@ -46,6 +50,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void playerGrandTichu(String playerId) {
+        for (GamePlayer player : gamePlayers) {
+            player.playerGrandTichu(playerId);
+        }
     }
 
     /**
@@ -53,6 +60,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void playerPlayedCards(CardCombination combination) {
+        for (GamePlayer player : gamePlayers) {
+            player.playerPlayedCards(combination);
+        }
     }
 
     /**
@@ -60,6 +70,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void roundFinished(int[] teamsScores) {
+        for (GamePlayer player : gamePlayers) {
+            player.roundFinished(teamsScores);
+        }
     }
 
     /**
@@ -67,6 +80,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void roundStarted() {
+        for (GamePlayer player : gamePlayers) {
+            player.roundStarted();
+        }
     }
 
     /**
@@ -74,6 +90,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void gameFinished(int[] teamsScores) {
+        for (GamePlayer player : gamePlayers) {
+            player.gameFinished(teamsScores);
+        }
     }
 
     /**
@@ -81,6 +100,9 @@ public class GamePlayerUpdater {
      * game observer registered.
      */
     public void playerLeft(String playerId) {
+        for (GamePlayer player : gamePlayers) {
+            player.playerLeft(playerId);
+        }
     }
 
     public void broadcast(Object packet) {

@@ -1,20 +1,21 @@
 package gr.nrallakis.tichu.tests;
 
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.DefaultArraySerializers;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestCardCombinationKryoSerializer extends TichuTestCase {
 
@@ -31,8 +32,8 @@ public class TestCardCombinationKryoSerializer extends TichuTestCase {
     }
 
     @Test
-    public void testCardSerialization() throws FileNotFoundException {
-        Array<Card> cards = new Array<>();
+    public void testCardCombinationSerialization() throws FileNotFoundException {
+        ArrayList<Card> cards = new ArrayList<>();
         cards.add(new Card(2, 2));
         cards.add(new Card(1, 3));
         cards.add(new Card(2, 4));

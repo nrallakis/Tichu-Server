@@ -19,11 +19,8 @@ public final class Card implements Comparable<Card>, KryoSerializable {
     private int rank;
     private int type;
 
+    /** Kryo requires a non-arg constructor to proceed to serialization */
     private Card() {}
-
-    public Card(int special) {
-        this(special, 15);
-    }
 
     public Card(int type, int rank) {
         this.type = type;
@@ -91,5 +88,20 @@ public final class Card implements Comparable<Card>, KryoSerializable {
     public void read(Kryo kryo, Input input) {
         this.rank = input.readInt();
         this.type = input.readInt();
+    }
+
+    @Override
+    public String toString() {
+        switch (type) {
+            case GREEN:
+                return "G" + rank;
+            case RED:
+                return "R" + rank;
+            case BLUE:
+                return "Bl" + rank;
+            case BLACK:
+                return "B" + rank;
+        }
+        return "";
     }
 }

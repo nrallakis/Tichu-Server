@@ -31,7 +31,6 @@ public class AccountManager {
      *
      * @param username ex. Nicholas R.
      * @param id       facebook id
-     * @return a log message
      */
     public void registerAccount(String username, String id) {
         String date = new SimpleDateFormat("dd.MM.yyyy 'at' hh:mm").format(new Date());
@@ -48,39 +47,37 @@ public class AccountManager {
     }
 
     public void login(String username, String id) {
-        if (!accountRegistered(id)) {
+        if (!isAccountRegistered(id)) {
             registerAccount(username, id);
         }
     }
 
-    private boolean accountRegistered(String id) {
+    private boolean isAccountRegistered(String accountId) {
         try {
-            ResultSet rs = dbManager.executeQuery("SELECT ID FROM ACCOUNTS WHERE ID == '" + id + "'");
+            ResultSet rs = dbManager.executeQuery("SELECT ID FROM ACCOUNTS WHERE ID == '" + accountId + "'");
             if (rs.next()) {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("No id: " + id + " exists in the database");
+            System.out.println("No id: " + accountId + " exists in the database");
         }
-
         return false;
     }
 
-    public int getAccountRankPoints(String id) {
-        try { // "SELECT ID FROM ACCOUNTS WHERE ID == '" + id + "'"
-            ResultSet rs = dbManager.executeQuery("SELECT RANK_POINTS FROM ACCOUNTS WHERE ID == '" + id + "'");
+    public int getAccountRankPoints(String accountId) {
+        try {
+            ResultSet rs = dbManager.executeQuery("SELECT RANK_POINTS FROM ACCOUNTS WHERE ID == '" + accountId + "'");
             rs.next();
             return rs.getInt("rank_points");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return 0;
     }
 
-    public String getAccountName(String id) {
-        try { // "SELECT ID FROM ACCOUNTS WHERE ID == '" + id + "'"
-            ResultSet rs = dbManager.executeQuery("SELECT USERNAME FROM ACCOUNTS WHERE ID == '" + id + "'");
+    public String getAccountName(String accountId) {
+        try {
+            ResultSet rs = dbManager.executeQuery("SELECT USERNAME FROM ACCOUNTS WHERE ID == '" + accountId + "'");
             rs.next();
             return rs.getString("username");
         } catch (SQLException e) {

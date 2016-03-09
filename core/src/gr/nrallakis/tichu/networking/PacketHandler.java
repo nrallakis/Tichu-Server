@@ -16,7 +16,7 @@ public class PacketHandler {
         this.server = server;
     }
 
-    public void recieved(Connection connection, Object object) {
+    public void received(Connection connection, Object object) {
         if (object instanceof Packets.Login) {
             login(connection, (Packets.Login) object);
         }
@@ -38,13 +38,18 @@ public class PacketHandler {
         else if (object instanceof Packets.GetRoomPlayers) {
             getRoomPlayers(connection, (Packets.GetRoomPlayers) object);
         }
+        else if (object instanceof GamePackets.GiveCards) {
+            receivedCards((GamePackets.GiveCards) object);
+        }
+    }
+
+    private void receivedCards(GamePackets.GiveCards object) {
+        
     }
 
     private void getRoomPlayers(Connection connection, Packets.GetRoomPlayers object) {
-        //Find the room of the connection
         Room roomToGetPlayers = server.getRoomManager()
-                .getRoom(object.roomId);
-        System.out.println(object.roomId);
+                .getRoomContaining(connection);
         roomToGetPlayers.updatePlayerStates();
     }
 
@@ -56,8 +61,7 @@ public class PacketHandler {
     }
 
     private void startGame(Connection connection, Packets.StartGame object) {
-        int roomId = object.roomId;
-        server.getRoomManager().getRoom(roomId).playerReady(connection);
+        server.getRoomManager().getRoomContaining(connection).setPlayerReady(connection);
     }
 
     private void joinRoom(Connection connection, Packets.JoinRoom object) {
@@ -68,16 +72,13 @@ public class PacketHandler {
             accepted = false;
         } else {
             room.addPlayer(new Player(connection));
+            room.updatePlayerStates();
             accepted = true;
             server.roomListUpdated();
         }
         Packets.JoinAccepted packet = new Packets.JoinAccepted();
         packet.accepted = accepted;
         connection.sendTCP(packet);
-
-        if (accepted) {
-            room.updatePlayerStates();
-        }
     }
 
     private void createRoom(Connection connection, Packets.CreateRoom packet) {
@@ -94,14 +95,11 @@ public class PacketHandler {
         server.roomListUpdated();
 
         Packets.RoomCreated packet2 = new Packets.RoomCreated();
-        packet2.id = room.getId();
         connection.sendTCP(packet2);
     }
 
     private void guestLogin(Connection connection, Packets.GuestLogin object) {
         String id = object.id;
-            /* Guest login for the first time
-			 * Send the guest information */
         if (id == null) {
             id = server.generateGuestId();
             Packets.GuestInfo packet = new Packets.GuestInfo();

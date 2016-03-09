@@ -30,13 +30,12 @@ public class Room {
         this.timeToPlay = roomProperties.secondsToPlay;
         this.players = new Player[4];
         this.id = ++nextId;
-        objectSpace = new ObjectSpace();
+        this.objectSpace = new ObjectSpace();
     }
 
     /** Adds a player to the room and the objectSpace connection. */
     public void addPlayer(Player player) {
         if (getPlayerCount() < 4) {
-            //Add player
             if (players[0] == null) players[0] = player;
             else if (players[1] == null) players[1] = player;
             else if (players[2] == null) players[2] = player;
@@ -47,7 +46,6 @@ public class Room {
 
     /** Sends the room players status to each player on the room */
     public void updatePlayerStates() {
-        //Broadcast the players information to the room
         for (int playerIndex = 0; playerIndex < players.length; playerIndex++) {
             Player player = players[playerIndex];
             if (player == null) continue;
@@ -55,7 +53,7 @@ public class Room {
         }
     }
 
-    /** Sends all the players excluding the one sending
+    /** Sends all the players excluding the receiver
      * The json is sent to the orientation of the player */
     private void sendRoomPlayersTo(int playerIndex) {
         Player player = players[playerIndex];
@@ -81,47 +79,48 @@ public class Room {
         player.getConnection().sendTCP(packet);
     }
 
-    public void removePlayer(Connection player) {
+    public void removePlayer(Connection playerConnection) {
         for (int i = 0; i < 4; i++) {
             if (players[i] == null) continue;
-            if (players[i].getId().equals(player.toString())) {
+            if (players[i].getId().equals(playerConnection.toString())) {
                 players[i] = null;
             }
         }
-        objectSpace.removeConnection(player);
-        updatePlayerStates();
+        objectSpace.removeConnection(playerConnection);
     }
 
     /** Sets a player ready. When all players are ready
-     * the game starts. Called when playerReady packet has
+     * the game starts. Called when setPlayerReady packet has
      * been received on the server listener.
      * @param connection The player who pressed ready.
      */
-    public void playerReady(Connection connection) {
-        for (Player p : players) {
-            if (p == null) continue;
-            if (p.getConnection().equals(connection)) {
-                p.ready = true;
-                System.out.println(connection.toString() + " is ready");
+    public void setPlayerReady(Connection connection) {
+        for (Player player : players) {
+            if (player == null) continue;
+            if (player.getConnection().equals(connection)) {
+                player.setReady(true);
             }
         }
 
-        for (Player p : players) {
-            if (p == null || !p.ready) return;
+        for (Player player : players) {
+            if (player == null || !player.isReady()) return;
         }
         startGame();
     }
 
-    /** Starts the game. Furthermore, it inits the game object
+    /** Starts the game, initializes the game object
      * with the 4 players of the room and then informs them
      * that the game starts */
     public void startGame() {
         game = new Game(players);
-        objectSpace.register(id, game);
+        GameConnection remoteConnection = game;
+        objectSpace.register(id, remoteConnection);
         GameStarted packet = new GameStarted();
-        for (Player p : players) {
-            p.getConnection().sendTCP(packet);
+        packet.gameConnectionId = id;
+        for (Player player : players) {
+            player.getConnection().sendTCP(packet);
         }
+        game.startGame();
     }
 
     public Game getGame() {
@@ -171,4 +170,12 @@ public class Room {
         return this.getId() == other.getId();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        result = prime * result + name.length();
+        return result;
+    }
 }

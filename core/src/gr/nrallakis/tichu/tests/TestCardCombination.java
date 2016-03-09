@@ -1,10 +1,10 @@
 package gr.nrallakis.tichu.tests;
 
-import com.badlogic.gdx.utils.Array;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
@@ -13,15 +13,15 @@ import static org.junit.Assert.assertEquals;
 
 public class TestCardCombination {
 
-    Array<Card> cards;
-    Array<Card> cards2;
+    ArrayList<Card> cards;
+    ArrayList<Card> cards2;
     CardCombination one;
     CardCombination two;
 
     @Before
     public void setUp() {
-        cards = new Array<>();
-        cards2 = new Array<>();
+        cards = new ArrayList<>();
+        cards2 = new ArrayList<>();
     }
 
     @After
@@ -40,8 +40,8 @@ public class TestCardCombination {
         cards2.add(new Card(Card.GREEN, 2));
         cards2.add(new Card(Card.BLUE, 2));
 
-        one = new CardCombination(CardCombination.PAIR, cards.first().getRank(), cards);
-        two = new CardCombination(CardCombination.PAIR, cards2.first().getRank(), cards2);
+        one = new CardCombination(CardCombination.PAIR, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.PAIR, cards2.get(0).getRank(), cards2);
 
         assertEquals(false, one.isStrongerThan(two));
         assertEquals(false, two.isStrongerThan(one));
@@ -62,7 +62,7 @@ public class TestCardCombination {
         cards2.add(new Card(Card.BLUE, 4));
 
         one = new CardCombination(CardCombination.PAIR, cards.get(2).getRank(), cards);
-        two = new CardCombination(CardCombination.PAIR, cards2.first().getRank(), cards2);
+        two = new CardCombination(CardCombination.PAIR, cards2.get(0).getRank(), cards2);
 
         assertEquals(true, one.isStrongerThan(two));
         assertEquals(false, two.isStrongerThan(one));
@@ -80,8 +80,8 @@ public class TestCardCombination {
         cards2.add(new Card(Card.BLUE, 4));
         cards2.add(new Card(Card.GREEN, 4));
 
-        one = new CardCombination(CardCombination.COLOR_BOMB, cards.first().getRank(), cards);
-        two = new CardCombination(CardCombination.COLOR_BOMB, cards2.first().getRank(), cards2);
+        one = new CardCombination(CardCombination.COLOR_BOMB, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.COLOR_BOMB, cards2.get(0).getRank(), cards2);
 
         assertEquals(false, one.isStrongerThan(two));
         assertEquals(true, two.isStrongerThan(one));
@@ -101,8 +101,8 @@ public class TestCardCombination {
         cards2.add(new Card(Card.RED, 7));
         cards2.add(new Card(Card.RED, 8));
 
-        one = new CardCombination(CardCombination.STRAIGHT_BOMB, cards.first().getRank(), cards);
-        two = new CardCombination(CardCombination.STRAIGHT_BOMB, cards2.first().getRank(), cards2);
+        one = new CardCombination(CardCombination.STRAIGHT_BOMB, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.STRAIGHT_BOMB, cards2.get(0).getRank(), cards2);
 
         assertEquals(false, one.isStrongerThan(two));
         assertEquals(true, two.isStrongerThan(one));
@@ -121,8 +121,8 @@ public class TestCardCombination {
         cards2.add(new Card(Card.RED, 8));
         cards2.add(new Card(Card.BLACK, 8));
 
-        one = new CardCombination(CardCombination.STRAIGHT_BOMB, cards.first().getRank(), cards);
-        two = new CardCombination(CardCombination.COLOR_BOMB, cards2.first().getRank(), cards2);
+        one = new CardCombination(CardCombination.STRAIGHT_BOMB, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.COLOR_BOMB, cards2.get(0).getRank(), cards2);
 
         assertEquals(true, one.isStrongerThan(two));
         assertEquals(false, two.isStrongerThan(one));
@@ -144,8 +144,8 @@ public class TestCardCombination {
         cards2.add(new Card(Card.RED, 5));
         cards2.add(new Card(Card.BLACK, 5));
 
-        one = new CardCombination(CardCombination.STRAIGHT_PAIRS, cards.first().getRank(), cards);
-        two = new CardCombination(CardCombination.STRAIGHT_PAIRS, cards2.first().getRank(), cards2);
+        one = new CardCombination(CardCombination.STRAIGHT_PAIRS, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.STRAIGHT_PAIRS, cards2.get(0).getRank(), cards2);
 
         assertEquals(false, one.isStrongerThan(two));
         assertEquals(true, two.isStrongerThan(one));

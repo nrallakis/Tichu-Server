@@ -6,12 +6,10 @@ import org.junit.Test;
 
 import gr.nrallakis.tichu.server.game.Card;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by nrallakis on 22/1/2016.
- */
 public class TestCard {
 
     private Card card;
@@ -47,5 +45,29 @@ public class TestCard {
     public void testEquals() {
         assertFalse(card.equals(card3));
         assertFalse(card2.equals(card3));
+    }
+
+    @Test
+    public void testNamingGreen() {
+        card = new Card(Card.GREEN, 5);
+        assertEquals("G5", card.toString());
+    }
+
+    @Test
+    public void testNamingRed() {
+        card = new Card(Card.RED, 7);
+        assertEquals("R7", card.toString());
+    }
+
+    @Test
+    public void testNamingBlue() {
+        card = new Card(Card.BLUE, 3);
+        assertEquals("Bl3", card.toString());
+    }
+
+    @Test
+    public void testNamingBlack() {
+        card = new Card(Card.BLACK, 2);
+        assertEquals("B2", card.toString());
     }
 }

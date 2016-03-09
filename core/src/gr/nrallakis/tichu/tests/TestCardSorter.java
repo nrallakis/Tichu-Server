@@ -1,10 +1,10 @@
 package gr.nrallakis.tichu.tests;
 
-import com.badlogic.gdx.utils.Array;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.utils.CardSorter;
@@ -13,13 +13,13 @@ import static org.junit.Assert.assertEquals;
 
 public class TestCardSorter {
 
-    private Array<Card> cards;
-    private Array<Card> sorted;
+    private ArrayList<Card> cards;
+    private ArrayList<Card> sorted;
 
     @Before
     public void setUp() {
-        cards = new Array<>();
-        sorted = new Array<>();
+        cards = new ArrayList<>();
+        sorted = new ArrayList<>();
     }
 
     @After

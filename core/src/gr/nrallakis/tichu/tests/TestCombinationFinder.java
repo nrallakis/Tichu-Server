@@ -1,24 +1,25 @@
 package gr.nrallakis.tichu.tests;
 
-import com.badlogic.gdx.utils.Array;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
-import gr.nrallakis.tichu.server.game.CardCombinationFinder;
+import gr.nrallakis.tichu.server.game.CardCombinationUtils;
+import gr.nrallakis.tichu.server.game.InvalidCardCombinationException;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestCombinationFinder {
 
-    private Array<Card> hand;
+    private ArrayList<Card> hand;
 
     @Before
     public void setUp() {
-        hand = new Array<Card>();
+        hand = new ArrayList<>();
     }
 
     @After
@@ -28,47 +29,47 @@ public class TestCombinationFinder {
 
     @Test
     public void testCalculatePoints() {
-        hand.add(new Card(Card.DRAGON));        //+25
+        hand.add(new Card(Card.DRAGON, 25));        //+25
         hand.add(new Card(Card.BLUE, 6));
-        hand.add(new Card(Card.PHOENIX));       //-25
-        hand.add(new Card(Card.MAHJONG));
+        hand.add(new Card(Card.PHOENIX, -1));       //-25
+        hand.add(new Card(Card.MAHJONG, 1));
         hand.add(new Card(Card.BLUE, 5));       //+5
         hand.add(new Card(Card.BLUE, 10));      //+10
         hand.add(new Card(Card.RED, 2));
         hand.add(new Card(Card.GREEN, Card.K)); //+10
-        assertEquals(25, CardCombinationFinder.calculatePoints(hand));
+        assertEquals(25, CardCombinationUtils.calculatePoints(hand));
 
-        hand.removeIndex(5); //-10
-        assertEquals(15, CardCombinationFinder.calculatePoints(hand));
+        hand.remove(5); //-10
+        assertEquals(15, CardCombinationUtils.calculatePoints(hand));
     }
 
     @Test
-    public void testFindCombination() {
+    public void testFindCombination() throws InvalidCardCombinationException {
         hand.add(new Card(Card.BLUE, 2));
         hand.add(new Card(Card.RED, 2));
-        assertEquals(CardCombination.PAIR, CardCombinationFinder.findCombination(hand).getType());
+        assertEquals(CardCombination.PAIR, CardCombinationUtils.findCombination(hand).getType());
     }
 
     @Test
-    public void testFindCombination2() {
+    public void testFindCombination2() throws InvalidCardCombinationException {
         hand.add(new Card(Card.BLACK, 4));
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.GREEN, 4));
-        assertEquals(CardCombination.TRIPLE, CardCombinationFinder.findCombination(hand).getType());
+        assertEquals(CardCombination.TRIPLE, CardCombinationUtils.findCombination(hand).getType());
     }
 
     @Test
-    public void testFindCombination3() {
+    public void testFindCombination3() throws InvalidCardCombinationException {
         hand.add(new Card(Card.GREEN, 3));
         hand.add(new Card(Card.BLACK, 3));
         hand.add(new Card(Card.RED, 3));
         hand.add(new Card(Card.BLACK, 2));
         hand.add(new Card(Card.BLUE, 2));
-        assertEquals(CardCombination.FULL_HOUSE, CardCombinationFinder.findCombination(hand).getType());
+        assertEquals(CardCombination.FULL_HOUSE, CardCombinationUtils.findCombination(hand).getType());
     }
 
     @Test
-    public void testFindCombination4() {
+    public void testFindCombination4() throws InvalidCardCombinationException {
         hand.add(new Card(Card.BLUE, 2));
         hand.add(new Card(Card.RED, 2));
         hand.add(new Card(Card.BLUE, 3));
@@ -77,30 +78,30 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.BLUE, 5));
         hand.add(new Card(Card.RED, 5));
-        assertEquals(CardCombination.STRAIGHT_PAIRS, CardCombinationFinder.findCombination(hand).getType());
+        assertEquals(CardCombination.STRAIGHT_PAIRS, CardCombinationUtils.findCombination(hand).getType());
     }
 
     @Test
-    public void testFindCombination5() {
+    public void testFindCombination5() throws InvalidCardCombinationException {
         hand.add(new Card(Card.BLUE, 4));
         hand.add(new Card(Card.GREEN, 4));
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.BLACK, 4));
-        assertEquals(CardCombination.COLOR_BOMB, CardCombinationFinder.findCombination(hand).getType());
+        assertEquals(CardCombination.COLOR_BOMB, CardCombinationUtils.findCombination(hand).getType());
     }
 
     @Test
     public void testIsPair() {
         hand.add(new Card(Card.BLUE, 2));
         hand.add(new Card(Card.RED, 2));
-        assertEquals(true, CardCombinationFinder.isPair(hand));
+        assertEquals(true, CardCombinationUtils.isPair(hand));
     }
 
     @Test
     public void testIsPair2() {
         hand.add(new Card(Card.BLUE, 2));
         hand.add(new Card(Card.RED, 3));
-        assertEquals(false, CardCombinationFinder.isPair(hand));
+        assertEquals(false, CardCombinationUtils.isPair(hand));
     }
 
     @Test
@@ -108,7 +109,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.BLUE, 2));
         hand.add(new Card(Card.RED, 2));
         hand.add(new Card(Card.BLACK, 2));
-        assertEquals(false, CardCombinationFinder.isPair(hand));
+        assertEquals(false, CardCombinationUtils.isPair(hand));
     }
 
     @Test
@@ -117,7 +118,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 2));
         hand.add(new Card(Card.BLUE, 3));
         hand.add(new Card(Card.RED, 3));
-        assertEquals(true, CardCombinationFinder.areStraightPairs(hand));
+        assertEquals(true, CardCombinationUtils.areStraightPairs(hand));
     }
 
     @Test
@@ -130,7 +131,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.BLUE, 5));
         hand.add(new Card(Card.RED, 5));
-        assertEquals(true, CardCombinationFinder.areStraightPairs(hand));
+        assertEquals(true, CardCombinationUtils.areStraightPairs(hand));
     }
 
     @Test
@@ -141,7 +142,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 5));
         hand.add(new Card(Card.BLUE, 1));
         hand.add(new Card(Card.RED, 7));
-        assertEquals(false, CardCombinationFinder.areStraightPairs(hand));
+        assertEquals(false, CardCombinationUtils.areStraightPairs(hand));
     }
 
     @Test
@@ -152,7 +153,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.BLUE, 5));
         hand.add(new Card(Card.RED, 5));
-        assertEquals(false, CardCombinationFinder.areStraightPairs(hand));
+        assertEquals(false, CardCombinationUtils.areStraightPairs(hand));
     }
 
     @Test
@@ -160,7 +161,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.BLACK, 4));
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.GREEN, 4));
-        assertEquals(true, CardCombinationFinder.isTriple(hand));
+        assertEquals(true, CardCombinationUtils.isTriple(hand));
     }
 
     @Test
@@ -168,7 +169,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.BLACK, 2));
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.GREEN, 1));
-        assertEquals(false, CardCombinationFinder.isTriple(hand));
+        assertEquals(false, CardCombinationUtils.isTriple(hand));
     }
     @Test
     public void testIsTriple3() {
@@ -176,7 +177,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.GREEN, 4));
         hand.add(new Card(Card.BLUE, 4));
-        assertEquals(false, CardCombinationFinder.isTriple(hand));
+        assertEquals(false, CardCombinationUtils.isTriple(hand));
     }
 
     @Test
@@ -186,7 +187,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 3));
         hand.add(new Card(Card.BLACK, 2));
         hand.add(new Card(Card.BLUE, 2));
-        assertEquals(true, CardCombinationFinder.isFullHouse(hand));
+        assertEquals(true, CardCombinationUtils.isFullHouse(hand));
     }
 
     @Test
@@ -196,7 +197,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 3));
         hand.add(new Card(Card.BLACK, 2));
         hand.add(new Card(Card.BLUE, 7));
-        assertEquals(false, CardCombinationFinder.isFullHouse(hand));
+        assertEquals(false, CardCombinationUtils.isFullHouse(hand));
     }
 
     @Test
@@ -206,7 +207,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, Card.A));
         hand.add(new Card(Card.BLACK, Card.A));
         hand.add(new Card(Card.BLUE, Card.A));
-        assertEquals(true, CardCombinationFinder.isFullHouse(hand));
+        assertEquals(true, CardCombinationUtils.isFullHouse(hand));
     }
 
     @Test
@@ -216,7 +217,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.GREEN, 5));
         hand.add(new Card(Card.GREEN, 6));
         hand.add(new Card(Card.GREEN, 7));
-        assertEquals(true, CardCombinationFinder.isStraight(hand));
+        assertEquals(true, CardCombinationUtils.isStraight(hand));
     }
 
     @Test
@@ -227,7 +228,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 12));
         hand.add(new Card(Card.GREEN, 13));
         hand.add(new Card(Card.GREEN, 14));
-        assertEquals(true, CardCombinationFinder.isStraight(hand));
+        assertEquals(true, CardCombinationUtils.isStraight(hand));
     }
 
     @Test
@@ -238,7 +239,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 12));
         hand.add(new Card(Card.GREEN, 13));
         hand.add(new Card(Card.GREEN, 14));
-        assertEquals(false, CardCombinationFinder.isStraight(hand));
+        assertEquals(false, CardCombinationUtils.isStraight(hand));
     }
 
     @Test
@@ -248,7 +249,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.GREEN, 4));
         hand.add(new Card(Card.RED, 5));
         hand.add(new Card(Card.GREEN, 6));
-        assertEquals(false, CardCombinationFinder.isStraight(hand));
+        assertEquals(false, CardCombinationUtils.isStraight(hand));
     }
 
     @Test
@@ -257,7 +258,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.BLACK, 3));
         hand.add(new Card(Card.BLACK, 1));
         hand.add(new Card(Card.BLACK, 12));
-        assertEquals(true, CardCombinationFinder.haveSameType(hand));
+        assertEquals(true, CardCombinationUtils.haveSameType(hand));
     }
 
     @Test
@@ -266,7 +267,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.GREEN, 3));
         hand.add(new Card(Card.BLACK, 1));
         hand.add(new Card(Card.BLACK, 12));
-        assertEquals(false, CardCombinationFinder.haveSameType(hand));
+        assertEquals(false, CardCombinationUtils.haveSameType(hand));
     }
 
     @Test
@@ -275,7 +276,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.GREEN, 3));
         hand.add(new Card(Card.RED, 1));
         hand.add(new Card(Card.BLUE, 12));
-        assertEquals(true, CardCombinationFinder.haveDifferentTypesEachOther(hand));
+        assertEquals(true, CardCombinationUtils.haveDifferentTypesEachOther(hand));
     }
 
     @Test
@@ -284,7 +285,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.BLACK, 3));
         hand.add(new Card(Card.RED, 1));
         hand.add(new Card(Card.BLUE, 12));
-        assertEquals(false, CardCombinationFinder.haveDifferentTypesEachOther(hand));
+        assertEquals(false, CardCombinationUtils.haveDifferentTypesEachOther(hand));
     }
 
     @Test
@@ -293,7 +294,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.GREEN, 3));
         hand.add(new Card(Card.RED, 1));
         hand.add(new Card(Card.GREEN, 12));
-        assertEquals(false, CardCombinationFinder.haveDifferentTypesEachOther(hand));
+        assertEquals(false, CardCombinationUtils.haveDifferentTypesEachOther(hand));
     }
 
     @Test
@@ -302,7 +303,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.GREEN, 4));
         hand.add(new Card(Card.RED, 4));
         hand.add(new Card(Card.BLACK, 4));
-        assertEquals(true, CardCombinationFinder.isColorBomb(hand));
+        assertEquals(true, CardCombinationUtils.isColorBomb(hand));
     }
 
     @Test
@@ -312,7 +313,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.BLUE, 5));
         hand.add(new Card(Card.BLUE, 6));
         hand.add(new Card(Card.BLUE, 7));
-        assertEquals(false, CardCombinationFinder.isStraightBomb(hand));
+        assertEquals(false, CardCombinationUtils.isStraightBomb(hand));
     }
 
     @Test
@@ -323,7 +324,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 6));
         hand.add(new Card(Card.RED, 7));
         hand.add(new Card(Card.BLACK, 8));
-        assertEquals(false, CardCombinationFinder.isStraightBomb(hand));
+        assertEquals(false, CardCombinationUtils.isStraightBomb(hand));
     }
 
     @Test
@@ -333,7 +334,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.GREEN, 3));
         hand.add(new Card(Card.BLUE, 3));
         hand.add(new Card(Card.RED, 4));
-        assertEquals(false, CardCombinationFinder.isStraightBomb(hand));
+        assertEquals(false, CardCombinationUtils.isStraightBomb(hand));
     }
 
 
@@ -346,7 +347,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.RED, 7));
         hand.add(new Card(Card.RED, 8));
         hand.add(new Card(Card.RED, 9));
-        assertEquals(true, CardCombinationFinder.isStraightBomb(hand));
+        assertEquals(true, CardCombinationUtils.isStraightBomb(hand));
     }
 
     @Test
@@ -356,7 +357,7 @@ public class TestCombinationFinder {
         hand.add(new Card(Card.BLACK, 5));
         hand.add(new Card(Card.RED, 6));
         hand.add(new Card(Card.RED, 7));
-        assertEquals(false, CardCombinationFinder.isStraightBomb(hand));
+        assertEquals(false, CardCombinationUtils.isStraightBomb(hand));
     }
 
 }

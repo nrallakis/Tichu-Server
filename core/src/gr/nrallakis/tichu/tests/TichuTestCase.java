@@ -3,11 +3,16 @@ package gr.nrallakis.tichu.tests;
 import org.junit.After;
 import org.junit.Before;
 
+import java.io.IOException;
+
 public abstract class TichuTestCase {
 
     @Before
-    public abstract void setUp();
+    public void setUp() {}
+
+    @Before
+    public void networkingSetup() throws IOException {}
 
     @After
-    public abstract void cleanUp();
+    public void cleanUp() {}
 }

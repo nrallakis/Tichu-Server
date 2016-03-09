@@ -1,94 +1,66 @@
 package gr.nrallakis.tichu.networking;
 
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.EndPoint;
-import com.esotericsoftware.kryonet.rmi.ObjectSpace;
-
-import gr.nrallakis.tichu.server.game.GamePlayerActions;
-
 public class Packets {
 
-    public static class CreateRoom {
+    public static class CreateRoom extends Packets {
         public String roomName;
         public String roomPassword;
         public int winningScore;
         public int timeToPlay;
     }
 
-    public static class RoomInfo {
+    public static class RoomInfo extends Packets {
         public String name;
     }
 
-    public static class JoinRoom {
+    public static class JoinRoom extends Packets {
         public int roomId;
     }
 
-    public static class StartGame {
-        public int roomId;
+    public static class StartGame extends Packets {
     }
 
-    public static class GameStarted {
+    public static class GameStarted extends Packets {
+        public int gameConnectionId;
     }
 
-    public static class Login {
+    public static class Login extends Packets {
         public String username, id;
     }
 
-    public static class LoginSuccessful {
+    public static class LoginSuccessful extends Packets {
+        public String playerId;
     }
 
-    public static class Rooms {
+    public static class Rooms extends Packets {
         public String rooms;
     }
 
-    public static class GetRooms {
+    public static class GetRooms extends Packets {
     }
 
-    public static class JoinAccepted {
+    public static class JoinAccepted extends Packets {
         public boolean accepted;
     }
 
-    public static class GuestLogin {
+    public static class GuestLogin extends Packets {
         public String id;
     }
 
-    public static class GuestInfo {
+    public static class GuestInfo extends Packets {
         public String username, id;
     }
 
-    public static class GetStatsPacket {
+    public static class GetStatsPacket extends Packets {
     }
 
-    public static class RoomCreated {
-        public int id;
+    public static class RoomCreated extends Packets {
     }
 
-    public static class RoomPlayers {
+    public static class RoomPlayers extends Packets {
         public String rightPlayerJson, topPlayerJson, leftPlayerJson;
     }
 
-    public static class GetRoomPlayers { public int roomId; }
-
-    public static void register(EndPoint endPoint) {
-        Kryo kryo = endPoint.getKryo();
-        ObjectSpace.registerClasses(kryo);
-        kryo.register(Packets.CreateRoom.class);
-        kryo.register(Packets.RoomInfo.class);
-        kryo.register(Packets.JoinRoom.class);
-        kryo.register(Packets.JoinAccepted.class);
-        kryo.register(Packets.StartGame.class);
-        kryo.register(Packets.GameStarted.class);
-        kryo.register(Packets.Login.class);
-        kryo.register(LoginSuccessful.class);
-        kryo.register(Packets.GetRooms.class);
-        kryo.register(Packets.Rooms.class);
-        kryo.register(Packets.GuestInfo.class);
-        kryo.register(Packets.GuestLogin.class);
-        kryo.register(Packets.RoomCreated.class);
-        kryo.register(Packets.RoomPlayers.class);
-        kryo.register(Packets.GetRoomPlayers.class);
-        kryo.register(GamePlayerActions.class);
-        kryo.register(String.class);
-    }
+    public static class GetRoomPlayers extends Packets {}
 }

@@ -1,10 +1,12 @@
 package gr.nrallakis.tichu.networking;
 
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import gr.nrallakis.tichu.core.RoomManager;
 import gr.nrallakis.tichu.database.DBManager;
@@ -12,19 +14,21 @@ import gr.nrallakis.tichu.networking.Packets.Rooms;
 
 public class TichuServer {
 
+    public static final int PORT = 44444;
+
     private Server server;
     private RoomManager roomManager;
-    private Array<Connection> lobbyPlayers;
+    private List<Connection> lobbyPlayers;
 
     public TichuServer() throws IOException {
         server = new Server();
-        Packets.register(server);
-        server.bind(44444);
+        Network.registerPackets(server);
+        server.bind(PORT);
     }
 
     public void start() {
         roomManager = new RoomManager(this);
-        lobbyPlayers = new Array<Connection>();
+        lobbyPlayers = new ArrayList<>();
         server.start();
         server.addListener(new ServerListener(this));
     }
@@ -43,9 +47,9 @@ public class TichuServer {
         c.sendTCP(packet);
     }
 
-    public void removePlayer(Connection c) {
-        if (lobbyPlayers.contains(c, true)) {
-            lobbyPlayers.removeValue(c, true);
+    public void removePlayer(Connection connection) {
+        if (lobbyPlayers.contains(connection)) {
+            lobbyPlayers.remove(connection);
         }
     }
 
@@ -71,5 +75,9 @@ public class TichuServer {
 
     public RoomManager getRoomManager() {
         return roomManager;
+    }
+
+    private EndPoint getEndPoint() {
+        return server;
     }
 }

@@ -13,7 +13,8 @@ public class DBManager {
 
     private static DBManager instance = new DBManager();
     private static final String DB_URL = "jdbc:sqlite:serverdata.db";
-    private Connection connection;
+    private static final String JDBC_DRIVER = "org.sqlite.JDBC";
+    private Connection sqlConnection;
 
     private DBManager() {
     }
@@ -24,16 +25,10 @@ public class DBManager {
 
     public void connect() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection(DB_URL);
-            if (connection != null) {
-                System.out.println("Connected to the database");
-                DatabaseMetaData dm = (DatabaseMetaData) connection.getMetaData();
-                System.out.println("Driver name: " + dm.getDriverName());
-                System.out.println("Driver version: " + dm.getDriverVersion());
-                System.out.println("Product name: " + dm.getDatabaseProductName());
-                System.out.println("Product version: " + dm.getDatabaseProductVersion());
-                System.out.println("Database connection succesful..");
+            Class.forName(JDBC_DRIVER);
+            sqlConnection = DriverManager.getConnection(DB_URL);
+            if (sqlConnection != null) {
+                printInfo();
             }
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
@@ -42,20 +37,31 @@ public class DBManager {
         }
     }
 
+    private void printInfo() throws SQLException {
+        System.out.println("Connected to the database");
+        DatabaseMetaData dm = sqlConnection.getMetaData();
+        System.out.println("Driver name: " + dm.getDriverName());
+        System.out.println("Driver version: " + dm.getDriverVersion());
+        System.out.println("Product name: " + dm.getDatabaseProductName());
+        System.out.println("Product version: " + dm.getDatabaseProductVersion());
+        System.out.println("Database connection successful..");
+    }
+
     public ResultSet executeQuery(String sql) {
-        if (sql == null) System.out.println("sql cannot be null");
+        if (sql == null)
+            throw new IllegalArgumentException("Sql parameter cannot be null");
         try {
-            return connection.prepareStatement(sql).executeQuery();
+            return sqlConnection.prepareStatement(sql).executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("FAIL");
+            System.out.println("Sql failed to execute query: " + sql);
             return null;
         }
     }
 
     public boolean executeUpdate(String sql) {
         try {
-            connection.prepareStatement(sql).executeUpdate();
+            sqlConnection.prepareStatement(sql).executeUpdate();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();

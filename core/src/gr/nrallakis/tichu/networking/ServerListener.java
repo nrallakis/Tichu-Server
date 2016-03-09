@@ -1,13 +1,14 @@
 package gr.nrallakis.tichu.networking;
 
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+
+import java.util.List;
 
 import gr.nrallakis.tichu.server.game.Room;
 
 /**
- * Note: Clients hold an id to their name, can be accesed with {@link #toString()}
+ * Note: Clients hold an id to their name, can be accessed with {@link #toString()}
  */
 
 public class ServerListener extends Listener {
@@ -27,12 +28,15 @@ public class ServerListener extends Listener {
 
     @Override
     public void disconnected(Connection connection) {
-        Array<Room> rooms = server.getRoomManager().getRooms();
-        for (int i = 0; i < rooms.size; i++) {
-            Room room = rooms.get(i);
+        List<Room> rooms = server.getRoomManager().getRooms();
+        for (int roomIndex = 0; roomIndex < rooms.size(); roomIndex++) {
+            Room room = rooms.get(roomIndex);
             if (room.contains(connection.toString())) {
                 room.removePlayer(connection);
-                if (room.isEmpty()) server.getRoomManager().removeRoom(i);
+                room.updatePlayerStates();
+                if (room.isEmpty()) {
+                    server.getRoomManager().removeRoom(roomIndex);
+                }
                 break;
             }
         }
@@ -41,7 +45,7 @@ public class ServerListener extends Listener {
 
     @Override
     public void received(Connection connection, Object object) {
-        packetHandler.recieved(connection, object);
+        packetHandler.received(connection, object);
     }
 
 }

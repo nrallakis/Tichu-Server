@@ -1,10 +1,13 @@
 package gr.nrallakis.tichu.server.game;
 
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public final class CardCombination implements KryoSerializable {
 
@@ -16,7 +19,7 @@ public final class CardCombination implements KryoSerializable {
     public static int STRAIGHT_BOMB = 5;
     public static int COLOR_BOMB = 6;
 
-    private Array<Card> cards;
+    private List<Card> cards;
     private int type;
 
     /** The value of the combination.
@@ -27,7 +30,7 @@ public final class CardCombination implements KryoSerializable {
 
     private CardCombination() {}
 
-    public CardCombination(int type, int value, Array<Card> sCards) {
+    public CardCombination(int type, int value, List<Card> sCards) {
         this.type = type;
         this.value = value;
         this.cards = sCards;
@@ -41,12 +44,12 @@ public final class CardCombination implements KryoSerializable {
         return value;
     }
 
-    public Array<Card> getCards() {
+    public List<Card> getCards() {
         return cards;
     }
 
     public int getLength() {
-        return cards.size;
+        return cards.size();
     }
 
     public boolean isStrongerThan(CardCombination comb) {
@@ -63,13 +66,13 @@ public final class CardCombination implements KryoSerializable {
     public void write(Kryo kryo, Output output) {
         output.writeInt(type);
         output.writeInt(value);
-        kryo.writeClassAndObject(output, cards.toArray(Card.class));
+        kryo.writeClassAndObject(output, cards.toArray(new Card[cards.size()]));
     }
 
     @Override
     public void read(Kryo kryo, Input input) {
         this.type = input.readInt();
         this.value = input.readInt();
-        this.cards = new Array<Card>((Card[]) kryo.readClassAndObject(input));
+        this.cards = new ArrayList<>(Arrays.asList((Card[]) kryo.readClassAndObject(input)));
     }
 }
