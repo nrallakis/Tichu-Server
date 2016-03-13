@@ -5,19 +5,15 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.esotericsoftware.kryonet.Connection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import gr.nrallakis.tichu.core.AccountManager;
-import gr.nrallakis.tichu.networking.GamePackets.PlayerBombed;
-import gr.nrallakis.tichu.networking.GamePackets.PlayerGrandTichu;
-import gr.nrallakis.tichu.networking.GamePackets.PlayerPassed;
-import gr.nrallakis.tichu.networking.GamePackets.PlayerPlayed;
-import gr.nrallakis.tichu.networking.GamePackets.PlayerTichu;
+import gr.nrallakis.tichu.server.core.AccountManager;
+import gr.nrallakis.tichu.server.networking.GamePackets;
 
 public class Player implements GamePlayer {
 
     private Connection connection;
-    private String id;
     private GamePlayerUpdate lastGameUpdate;
 
     private boolean isReady;
@@ -26,7 +22,6 @@ public class Player implements GamePlayer {
 
     public Player(Connection connection) {
         this.connection = connection;
-        this.id = connection.toString();
         this.bet = Bet.NONE;
         this.hand = new ArrayList<>(14);
     }
@@ -52,25 +47,33 @@ public class Player implements GamePlayer {
     }
 
     public String getId() {
-        return id;
+        return connection.toString();
     }
 
     public int getPoints() {
-        return AccountManager.getInstance().getAccountRankPoints(id);
+        return AccountManager.getInstance().getAccountRankPoints(getId());
     }
 
     public String getName() {
-        return AccountManager.getInstance().getAccountName(id);
+        return AccountManager.getInstance().getAccountName(getId());
     }
 
     public List<Card> getHand() {
         return hand;
     }
 
+    public boolean hasMahjong() {
+        return hand.contains(new Card(Card.MAHJONG, 1));
+    }
+
+    public boolean hasCards(List<Card> cards) {
+        return hand.containsAll(cards);
+    }
+
     @Override
     public void playerPassed() {
         lastGameUpdate = GamePlayerUpdate.PLAYER_PASSED;
-        sendPacket(new PlayerPassed());
+        sendPacket(new GamePackets.PlayerPassed());
     }
 
     @Override
@@ -82,16 +85,16 @@ public class Player implements GamePlayer {
     @Override
     public void playerBombed(String playerId, CardCombination bomb) {
         lastGameUpdate = GamePlayerUpdate.PLAYER_BOMBED;
-        PlayerBombed playerBombed = new PlayerBombed();
+        GamePackets.PlayerBombed playerBombed = new GamePackets.PlayerBombed();
     }
 
     @Override
     public void playerTichu(String playerId) {
         lastGameUpdate = GamePlayerUpdate.PLAYER_TICHU;
-        if (playerId.equals(this.id)) {
+        if (playerId.equals(getId())) {
             setBet(Bet.TICHU);
         }
-        PlayerTichu tichu = new PlayerTichu();
+        GamePackets.PlayerTichu tichu = new GamePackets.PlayerTichu();
         tichu.playerId = playerId;
         sendPacket(tichu);
     }
@@ -99,10 +102,10 @@ public class Player implements GamePlayer {
     @Override
     public void playerGrandTichu(String playerId) {
         lastGameUpdate = GamePlayerUpdate.PLAYER_GRAND_TICHU;
-        if (playerId.equals(this.id)) {
+        if (playerId.equals(getId())) {
             setBet(Bet.GRAND_TICHU);
         }
-        PlayerGrandTichu grandTichu = new PlayerGrandTichu();
+        GamePackets.PlayerGrandTichu grandTichu = new GamePackets.PlayerGrandTichu();
         grandTichu.playerId = playerId;
         sendPacket(grandTichu);
     }
@@ -110,7 +113,7 @@ public class Player implements GamePlayer {
     @Override
     public void playerPlayedCards(CardCombination combination) {
         lastGameUpdate = GamePlayerUpdate.PLAYER_PLAYED_CARDS;
-        PlayerPlayed cardsPlayed = new PlayerPlayed();
+        GamePackets.PlayerPlayed cardsPlayed = new GamePackets.PlayerPlayed();
         cardsPlayed.cardCombination = combination;
         sendPacket(cardsPlayed);
     }
@@ -162,8 +165,11 @@ public class Player implements GamePlayer {
         connection.sendTCP(packet);
     }
 
-    @Override
-    public String toString() {
-        return id;
+    public void addCards(Card...theCards) {
+        hand.addAll(Arrays.asList(theCards));
+    }
+
+    public void removeCards(List<Card> cards) {
+        hand.removeAll(cards);
     }
 }

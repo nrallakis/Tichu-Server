@@ -3,7 +3,7 @@ package gr.nrallakis.tichu.server.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Timer;
 
-import gr.nrallakis.tichu.networking.GamePackets.*;
+import gr.nrallakis.tichu.server.networking.GamePackets.GiveCards;
 
 public class Game implements GameConnection {
 
@@ -16,7 +16,7 @@ public class Game implements GameConnection {
     private Player[] players;
     private Player turnPlayer;
 
-    private Timer time;
+    private Timer timer;
     private Deck deck;
     private CardCombination lastCombination;
     private String lastPlayFrom;
@@ -66,22 +66,15 @@ public class Game implements GameConnection {
         //Send gameFinished packet to players
     }
 
-    public void dealCards() {
-        //Send with rmi a json
-        //with all the 14 cards
-    }
-
     private void dealEightCards() {
         Gdx.app.log("SERVER", "Dealing 8 cards");
         currentState = GameState.CALL_FOR_GRAND;
         GiveCards packet = new GiveCards();
-        Card[] eightCards = new Card[8];
-        for (GamePlayer player : players) {
-            for (int i = 0; i < 8; i++) {
-                eightCards[i] = deck.drawCard();
-            }
-            packet.cards = eightCards;
+        for (Player player : players) {
+            Card[] cards = deck.drawEightCards();
+            packet.cards = cards;
             player.getConnection().sendTCP(packet);
+            player.addCards(cards);
         }
     }
 
@@ -123,23 +116,23 @@ public class Game implements GameConnection {
         switch (playerIndex) {
             case 0:
                 sendCard(players[1], right);
-                sendCard(players[2], left);
-                sendCard(players[3], top);
+                sendCard(players[2], top);
+                sendCard(players[3], left);
                 break;
             case 1:
                 sendCard(players[2], right);
-                sendCard(players[3], left);
-                sendCard(players[0], top);
+                sendCard(players[3], top);
+                sendCard(players[0], left);
                 break;
             case 2:
                 sendCard(players[3], right);
-                sendCard(players[0], left);
-                sendCard(players[1], top);
+                sendCard(players[0], top);
+                sendCard(players[1], left);
                 break;
             case 3:
                 sendCard(players[0], right);
-                sendCard(players[1], left);
-                sendCard(players[2], top);
+                sendCard(players[1], top);
+                sendCard(players[2], left);
                 break;
         }
     }
@@ -157,26 +150,51 @@ public class Game implements GameConnection {
     @Override
     public void dealCardsLeft(String playerId) {
         Player player = getPlayer(playerId);
+        if (player.getHand().size() > 8) return;
         GiveCards cardsLeft = new GiveCards();
-        cardsLeft.cards = deck.drawSixCards();
+        Card[] theCards = deck.drawSixCards();
+        cardsLeft.cards = theCards;
+        player.addCards(theCards);
         player.sendPacket(cardsLeft);
+
+        if (allPlayersHaveAllCards()) {
+            Player playerToPlayFirst = findWhoPlaysFirst();
+            gamePlayerUpdater.playerPlaysFirst(playerToPlayFirst.getId());
+        }
+    }
+
+    private boolean allPlayersHaveAllCards() {
+        for (Player player : players) {
+            if (player.getHand().size() != 14)
+                return false;
+        }
+        return true;
+    }
+
+    public Player findWhoPlaysFirst() {
+        for (Player player : players) {
+            if (player.hasMahjong()) return player;
+        }
+        return null;
     }
 
     private void sendCard(Player player, Card card) {
         GiveCards cardPacket = new GiveCards();
         cardPacket.cards = new Card[]{ card };
         player.sendPacket(cardPacket);
+        player.getHand().add(card);
     }
 
     @Override
     public void playCards(String playerId, CardCombination newCombination) {
-        if (!isPlayerTurn(playerId)) return;
+        Player player = getPlayer(playerId);
+        if (!isPlayerTurn(player)) return;
         if (newCombination.isStrongerThan(lastCombination)) {
             lastCombination = newCombination;
             gamePlayerUpdater.playerPlayedCards(newCombination);
         }
+        player.removeCards(newCombination.getCards());
         nextTurn();
-        System.out.println("PLAYED CARDS");
     }
 
     public GamePlayerUpdater getGamePlayerUpdater() {
@@ -189,7 +207,7 @@ public class Game implements GameConnection {
                 return player;
             }
         }
-        return null;
+        throw new IllegalArgumentException("No player exists with id: " + playerId);
     }
 
     private int getPlayerIndex(String playerId) {
@@ -201,6 +219,8 @@ public class Game implements GameConnection {
         }
         throw new IllegalStateException();
     }
+
+    private boolean isPlayerTurn(Player player) { return isPlayerTurn(player.getId()); }
 
     private boolean isPlayerTurn(String playerId) {
         return players[turn].getId().equals(playerId);

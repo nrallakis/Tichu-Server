@@ -1,5 +1,9 @@
 package gr.nrallakis.tichu.server.game;
 
+import com.badlogic.gdx.Gdx;
+
+import gr.nrallakis.tichu.server.networking.GamePackets;
+
 public class GamePlayerUpdater {
 
     private GamePlayer[] gamePlayers;
@@ -111,4 +115,10 @@ public class GamePlayerUpdater {
         }
     }
 
+    public void playerPlaysFirst(String playerId) {
+        Gdx.app.log("SERVER", "SENDING WHO PLAYS FIRST PACKET: " + playerId);
+        GamePackets.PlayerToPlayFirst packet = new GamePackets.PlayerToPlayFirst();
+        packet.playerId = playerId;
+        broadcast(packet);
+    }
 }

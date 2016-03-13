@@ -16,8 +16,8 @@ public class Deck {
     }
 
     private void addNormalCards() {
-        for (int type = 0; type < 3; type++) {
-            for (int rank = 2; rank < 14; rank++) {
+        for (int type = 0; type < 4; type++) {
+            for (int rank = 2; rank < 15; rank++) {
                 cards.add(new Card(type, rank));
             }
         }
@@ -39,10 +39,18 @@ public class Deck {
     }
 
     public Card[] drawSixCards() {
-        Card[] sixCards = new Card[6];
-        for (int i = 0; i < sixCards.length; i++) {
-            sixCards[i] = drawCard();
+        return drawCards(6);
+    }
+
+    public Card[] drawEightCards() {
+        return drawCards(8);
+    }
+
+    private Card[] drawCards(int count) {
+        Card[] cards = new Card[count];
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = drawCard();
         }
-        return sixCards;
+        return cards;
     }
 }
