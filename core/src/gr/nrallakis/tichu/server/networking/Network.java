@@ -5,6 +5,7 @@ import com.esotericsoftware.kryo.serializers.DefaultArraySerializers;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
+import gr.nrallakis.tichu.server.networking.GamePackets.*;
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
 import gr.nrallakis.tichu.server.game.GameConnection;
@@ -33,20 +34,21 @@ public class Network {
         kryo.register(Packets.RoomCreated.class);
         kryo.register(Packets.RoomPlayers.class);
         kryo.register(Packets.GetRoomPlayers.class);
+        kryo.register(String.class);
+        kryo.register(String[].class);
     }
 
     private static void registerGamePackets(Kryo kryo) {
-        kryo.register(GamePackets.PlayerGrandTichu.class);
-        kryo.register(GamePackets.PlayerTichu.class);
-        kryo.register(GamePackets.PlayerPassed.class);
-        kryo.register(GamePackets.PlayerPlayed.class);
-        kryo.register(GamePackets.GiveCards.class);
-        kryo.register(GamePackets.PlayerBombed.class);
+        kryo.register(PlayerGrandTichu.class);
+        kryo.register(PlayerTichu.class);
+        kryo.register(PlayerPassed.class);
+        kryo.register(PlayerPlayed.class);
+        kryo.register(GiveCards.class);
+        kryo.register(PlayerBombed.class);
         kryo.register(Card.class);
         kryo.register(CardCombination.class);
         kryo.register(GameConnection.class);
-        kryo.register(String.class);
-        kryo.register(GamePackets.PlayerToPlayFirst.class);
+        kryo.register(PlayerToPlayFirst.class);
 
         DefaultArraySerializers.ObjectArraySerializer cardArraySerializer
                 = new DefaultArraySerializers.ObjectArraySerializer(kryo, Card[].class);

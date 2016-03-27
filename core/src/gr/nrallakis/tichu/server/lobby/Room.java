@@ -58,27 +58,30 @@ public class Room {
     /** Sends all the players excluding the receiver
      * The json is sent to the orientation of the player */
     private void sendRoomPlayersTo(int playerIndex) {
-        Player player = players[playerIndex];
-        ArrayList<Player> playerList = new ArrayList<>();
-        playerList.addAll(Arrays.asList(players));
-        Collections.rotate(playerList, -playerIndex);
-        playerList.remove(0);
-
+        Player[] tempPlayers = getPlayersExcluding(playerIndex);
         Packets.RoomPlayers packet = new Packets.RoomPlayers();
-        Player rightPlayer = playerList.get(0);
+
+        Player rightPlayer = tempPlayers[0];
         if (rightPlayer != null) {
             packet.rightPlayerJson = rightPlayer.toJson();
         }
-        Player topPlayer = playerList.get(1);
+        Player topPlayer = tempPlayers[1];
         if (topPlayer != null) {
             packet.topPlayerJson = topPlayer.toJson();
         }
-        Player leftPlayer = playerList.get(2);
+        Player leftPlayer = tempPlayers[2];
         if (leftPlayer != null) {
             packet.leftPlayerJson = leftPlayer.toJson();
         }
 
-        player.getConnection().sendTCP(packet);
+        players[playerIndex].sendPacket(packet);
+    }
+
+    private Player[] getPlayersExcluding(int playerIndex) {
+        ArrayList<Player> playerList = new ArrayList<>(Arrays.asList(players));
+        Collections.rotate(playerList, -playerIndex);
+        playerList.remove(0);
+        return playerList.toArray(new Player[3]);
     }
 
     public void removePlayer(Connection playerConnection) {
@@ -105,7 +108,7 @@ public class Room {
         }
 
         for (Player player : players) {
-            if (player == null || !player.isReady()) return;
+            if (player == null || player.isNotReady()) return;
         }
         startGame();
     }
@@ -120,9 +123,23 @@ public class Room {
         Packets.GameStarted packet = new Packets.GameStarted();
         packet.gameConnectionId = id;
         for (Player player : players) {
+            ArrayList<String> playerIds = getPlayerIdsExcluding(player.getId());
+            packet.playerIds = playerIds.toArray(new String[3]);
             player.sendPacket(packet);
         }
         game.startGame();
+    }
+
+    private ArrayList<String> getPlayerIdsExcluding(String playerId) {
+        ArrayList<String> playerIds = new ArrayList<>(4);
+        for (Player p : players) {
+            playerIds.add(p.getId());
+        }
+        //Push the receiver to the start and remove him.
+        int receiverIndex = playerIds.indexOf(playerId);
+        Collections.rotate(playerIds, -receiverIndex);
+        playerIds.remove(0);
+        return playerIds;
     }
 
     public Game getGame() {

@@ -23,6 +23,7 @@ public class Packets {
 
     public static class GameStarted extends Packets {
         public int gameConnectionId;
+        public String[] playerIds;
     }
 
     public static class Login extends Packets {

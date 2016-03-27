@@ -78,6 +78,22 @@ public class Game implements GameConnection {
         }
     }
 
+    @Override
+    public void dealCardsLeft(String playerId) {
+        Player player = getPlayer(playerId);
+        if (player.getHand().size() > 8) return;
+        GiveCards cardsLeft = new GiveCards();
+        Card[] theCards = deck.drawSixCards();
+        cardsLeft.cards = theCards;
+        player.addCards(theCards);
+        player.sendPacket(cardsLeft);
+
+        if (allPlayersHaveAllCards()) {
+            Player playerToPlayFirst = findWhoPlaysFirst();
+            gamePlayerUpdater.playerPlaysFirst(playerToPlayFirst.getId());
+        }
+    }
+
     private void nextTurn() {
         //Increment turn (0-3)
         turn = ++turn % 4;
@@ -147,21 +163,6 @@ public class Game implements GameConnection {
         }
     }
 
-    @Override
-    public void dealCardsLeft(String playerId) {
-        Player player = getPlayer(playerId);
-        if (player.getHand().size() > 8) return;
-        GiveCards cardsLeft = new GiveCards();
-        Card[] theCards = deck.drawSixCards();
-        cardsLeft.cards = theCards;
-        player.addCards(theCards);
-        player.sendPacket(cardsLeft);
-
-        if (allPlayersHaveAllCards()) {
-            Player playerToPlayFirst = findWhoPlaysFirst();
-            gamePlayerUpdater.playerPlaysFirst(playerToPlayFirst.getId());
-        }
-    }
 
     private boolean allPlayersHaveAllCards() {
         for (Player player : players) {

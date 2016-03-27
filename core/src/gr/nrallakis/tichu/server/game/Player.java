@@ -66,6 +66,10 @@ public class Player implements GamePlayer {
         return hand.contains(new Card(Card.MAHJONG, 1));
     }
 
+    public void sendPacket(Object packet) {
+        connection.sendTCP(packet);
+    }
+
     public boolean hasCards(List<Card> cards) {
         return hand.containsAll(cards);
     }
@@ -134,19 +138,10 @@ public class Player implements GamePlayer {
     }
 
     @Override
-    public void playerLeft(String playerId) {
-    }
-
-    public boolean isReady() {
-        return isReady;
-    }
+    public void playerLeft(String playerId) {}
 
     public Bet getBet() {
         return bet;
-    }
-
-    public void setReady(boolean isReady) {
-        this.isReady = isReady;
     }
 
     public void setBet(Bet bet) {
@@ -161,8 +156,12 @@ public class Player implements GamePlayer {
         return lastGameUpdate;
     }
 
-    public void sendPacket(Object packet) {
-        connection.sendTCP(packet);
+    public boolean isNotReady() {
+        return !isReady;
+    }
+
+    public void setReady(boolean isReady) {
+        this.isReady = isReady;
     }
 
     public void addCards(Card...theCards) {
