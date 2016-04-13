@@ -6,12 +6,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import gr.nrallakis.tichu.server.database.DBManager;
+import gr.nrallakis.tichu.server.database.SQLBuilder;
 
 public class AccountManager {
 
     private static final int DEFAULT_POINTS = 1000;
     private static final int DEFAULT_LEVEL = 1;
     private static final int DEFAULT_XP = 0;
+
 
     private static AccountManager instance = new AccountManager();
     private DBManager dbManager;
@@ -34,7 +36,11 @@ public class AccountManager {
      */
     public void registerAccount(String username, String id) {
         String date = new SimpleDateFormat("dd.MM.yyyy 'at' hh:mm").format(new Date());
-        dbManager.executeUpdate("INSERT INTO ACCOUNTS values('" + username + "', '" + date + "', " + DEFAULT_POINTS + ", '" + id + "', " + DEFAULT_LEVEL + ", " + DEFAULT_XP + ")");
+        String update = new SQLBuilder()
+                .insertInto("ACCOUNTS")
+                .values(username, date, DEFAULT_POINTS, id, DEFAULT_LEVEL, DEFAULT_XP)
+                .getSQL();
+        dbManager.executeUpdate(update);
     }
 
     /**
@@ -54,7 +60,8 @@ public class AccountManager {
 
     private boolean isAccountRegistered(String accountId) {
         try {
-            ResultSet rs = dbManager.executeQuery("SELECT ID FROM ACCOUNTS WHERE ID == '" + accountId + "'");
+            String query = new SQLBuilder().select("ID").from("ACCOUNTS").where("ID").equal(accountId).getSQL();
+            ResultSet rs = dbManager.executeQuery(query);
             if (rs.next()) {
                 return true;
             }
@@ -66,7 +73,8 @@ public class AccountManager {
 
     public int getAccountRankPoints(String accountId) {
         try {
-            ResultSet rs = dbManager.executeQuery("SELECT RANK_POINTS FROM ACCOUNTS WHERE ID == '" + accountId + "'");
+            String query = new SQLBuilder().select("RANK_POINTS").from("ACCOUNTS").where("ID").equal(accountId).getSQL();
+            ResultSet rs = dbManager.executeQuery(query);
             rs.next();
             return rs.getInt("rank_points");
         } catch (SQLException e) {
@@ -77,7 +85,8 @@ public class AccountManager {
 
     public String getAccountName(String accountId) {
         try {
-            ResultSet rs = dbManager.executeQuery("SELECT USERNAME FROM ACCOUNTS WHERE ID == '" + accountId + "'");
+            String query = new SQLBuilder().select("USERNAME").from("ACCOUNTS").where("ID").equal(accountId).getSQL();
+            ResultSet rs = dbManager.executeQuery(query);
             rs.next();
             return rs.getString("username");
         } catch (SQLException e) {
