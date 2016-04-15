@@ -88,8 +88,8 @@ public class PacketHandler {
         properties.secondsToPlay = packet.timeToPlay;
 
         Room room = new Room(properties);
+        server.addRoomPlayer(connection);
         room.addPlayer(new Player(connection));
-        room.updatePlayerStates();
 
         server.getRoomManager().addRoom(room);
         server.roomListUpdated();

@@ -7,10 +7,6 @@ import java.util.List;
 
 import gr.nrallakis.tichu.server.lobby.Room;
 
-/**
- * Note: Clients hold an id to their name, can be accessed with {@link #toString()}
- */
-
 public class ServerListener extends Listener {
 
     private TichuServer server;
@@ -40,6 +36,7 @@ public class ServerListener extends Listener {
                 break;
             }
         }
+        server.roomListUpdated();
         server.removePlayer(connection);
     }
 

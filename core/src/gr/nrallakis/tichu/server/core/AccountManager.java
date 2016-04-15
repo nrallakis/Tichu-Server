@@ -14,7 +14,6 @@ public class AccountManager {
     private static final int DEFAULT_LEVEL = 1;
     private static final int DEFAULT_XP = 0;
 
-
     private static AccountManager instance = new AccountManager();
     private DBManager dbManager;
 

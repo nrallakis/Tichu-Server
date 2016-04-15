@@ -17,7 +17,9 @@ public class TichuServer {
 
     private Server server;
     private RoomManager roomManager;
+
     private List<Connection> lobbyPlayers;
+    private List<Connection> roomPlayers;
 
     public TichuServer() throws IOException {
         server = new Server();
@@ -26,8 +28,9 @@ public class TichuServer {
     }
 
     public void start() {
-        roomManager = new RoomManager(this);
         lobbyPlayers = new ArrayList<>();
+        roomPlayers = new ArrayList<>();
+        roomManager = new RoomManager(this);
         server.start();
         server.addListener(new ServerListener(this));
     }
@@ -38,22 +41,18 @@ public class TichuServer {
     }
 
     public void addLobbyPlayer(Connection c) {
+        roomPlayers.remove(c);
         lobbyPlayers.add(c);
+    }
 
-        Packets.Rooms packet = new Packets.Rooms();
-        packet.rooms = roomManager.getRoomsData();
-        if (packet.rooms == null) return;
-        c.sendTCP(packet);
+    public void addRoomPlayer(Connection c) {
+        lobbyPlayers.remove(c);
+        roomPlayers.add(c);
     }
 
     public void removePlayer(Connection connection) {
-        if (lobbyPlayers.contains(connection)) {
-            lobbyPlayers.remove(connection);
-        }
-    }
-
-    public int getOnlinePlayerCount() {
-        return server.getConnections().length;
+        lobbyPlayers.remove(connection);
+        roomPlayers.remove(connection);
     }
 
     public void sendPacketToLobby(Object packet) {
@@ -76,7 +75,7 @@ public class TichuServer {
         return roomManager;
     }
 
-    private EndPoint getEndPoint() {
-        return server;
+    public int getPlayersCount() {
+        return lobbyPlayers.size() + roomPlayers.size();
     }
 }
