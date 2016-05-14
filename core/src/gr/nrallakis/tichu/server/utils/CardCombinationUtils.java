@@ -6,8 +6,15 @@ import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
 import gr.nrallakis.tichu.server.game.InvalidCardCombinationException;
 
+/** Utility class for card combinations. Includes many card combination operations*/
 public class CardCombinationUtils {
 
+    /**
+     * Given an Array of cards, finds and returns the appropriate CardCombination object.
+     * If the cards do not form any type of combination, an InvalidCardCombinationException is thrown
+     *
+     * @see CardCombination
+     */
     public static CardCombination findCombination(List<Card> sCards) throws InvalidCardCombinationException {
         final int scalar = 2;
         if (sCards.size() == 1) {
