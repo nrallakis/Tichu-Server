@@ -9,26 +9,36 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Represents a combination of cards.
+ */
 public final class CardCombination implements KryoSerializable {
 
-    public static int PAIR = 0;
-    public static int FULL_HOUSE = 1;
-    public static int STRAIGHT_PAIRS = 2;
-    public static int STRAIGHT = 3;
-    public static int TRIPLE = 4;
-    public static int STRAIGHT_BOMB = 5;
-    public static int COLOR_BOMB = 6;
+    public static int SINGLE = 0;
+    public static int PAIR = 1;
+    public static int FULL_HOUSE = 2;
+    public static int STRAIGHT_PAIRS = 3;
+    public static int STRAIGHT = 4;
+    public static int TRIPLE = 5;
+    public static int STRAIGHT_BOMB = 6;
+    public static int COLOR_BOMB = 7;
 
     private List<Card> cards;
     private int type;
 
-    /** The value of the combination.
-     * Used to compare to same type combination
+    /**
+     * The value of the combination.
+     * Used to compare combinations of the same type
      * The value uses a *2 scalar to avoid float
-     * usage with phoenix +0.5 rank */
+     * usage with phoenix +0.5 rank
+     */
     private int value;
 
-    private CardCombination() {}
+    /**
+     * Private constructor used during kryo serialization
+     */
+    private CardCombination() {
+    }
 
     public CardCombination(int type, int value, List<Card> sCards) {
         this.type = type;
@@ -48,16 +58,33 @@ public final class CardCombination implements KryoSerializable {
         return cards;
     }
 
-    public int getLength() {
-        return cards.size();
-    }
-
+    /**
+     * Compares this combination of cards with the specified
+     *
+     * @param comb the combination to compare to
+     * @return Returns whether it is stronger or not
+     */
     public boolean isStrongerThan(CardCombination comb) {
+        /** Every combination is stronger than empty combination*/
+        if (comb == null) {
+            return true;
+        }
+
+        /** Straight bombs are stronger than color bombs*/
         if (this.type == STRAIGHT_BOMB && comb.getType() == COLOR_BOMB) {
             return true;
         }
+
+        /** Having dealt with bombs, every different type isn't stronger */
         if (this.type != comb.getType()) {
             return false;
+        }
+
+        /** If the combination is a single card, compare the single cards */
+        if (comb.getCards().size() == 1) {
+            Card card = cards.get(0);
+            Card other = comb.getCards().get(0);
+            return card.isStrongerThan(other);
         }
         return this.value > comb.getValue();
     }
@@ -74,5 +101,14 @@ public final class CardCombination implements KryoSerializable {
         this.type = input.readInt();
         this.value = input.readInt();
         this.cards = new ArrayList<>(Arrays.asList((Card[]) kryo.readClassAndObject(input)));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof CardCombination)) return false;
+        CardCombination other = (CardCombination) obj;
+        return value == other.getValue()
+                && type == other.getType()
+                && cards.equals(other.getCards());
     }
 }

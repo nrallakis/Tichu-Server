@@ -1,4 +1,4 @@
-package gr.nrallakis.tichu.server.tests;
+package gr.nrallakis.tichu.server;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +17,8 @@ public class TestCardCombination {
     ArrayList<Card> cards2;
     CardCombination one;
     CardCombination two;
+    Card cardOne;
+    Card cardTwo;
 
     @Before
     public void setUp() {
@@ -30,6 +32,60 @@ public class TestCardCombination {
         cards2 = null;
         one = null;
         two = null;
+        cardOne = null;
+        cardTwo = null;
+    }
+
+    @Test
+    public void testIsStrongerCombinationSinglesSameRank() {
+        cards.add(new Card(Card.BLACK, 2));
+        cards2.add(new Card(Card.GREEN, 2));
+
+        one = new CardCombination(CardCombination.PAIR, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.PAIR, cards2.get(0).getRank(), cards2);
+
+        assertEquals(false, one.isStrongerThan(two));
+        assertEquals(false, two.isStrongerThan(one));
+    }
+
+    @Test
+    public void testIsStrongerCombinationSinglesDifferentRank() {
+        cards.add(new Card(Card.BLACK, 2));
+        cards2.add(new Card(Card.GREEN, 3));
+
+        one = new CardCombination(CardCombination.SINGLE, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.SINGLE, cards2.get(0).getRank(), cards2);
+
+        assertEquals(false, one.isStrongerThan(two));
+        assertEquals(true, two.isStrongerThan(one));
+    }
+
+    @Test
+    public void testIsStrongerCombinationEmptyCombination() {
+        cards.add(new Card(Card.BLACK, 2));
+
+        one = new CardCombination(CardCombination.SINGLE, cards.get(0).getRank(), cards);
+
+        assertEquals(true, one.isStrongerThan(null));
+    }
+
+
+    @Test
+    public void testIsStrongerCombinationEmptyCombinationPhoenix() {
+        cards.add(new Card(Card.PHOENIX, 0));
+
+        one = new CardCombination(CardCombination.SINGLE, cards.get(0).getRank(), cards);
+
+        assertEquals(true, one.isStrongerThan(null));
+    }
+
+    @Test
+    public void testIsStrongerCombinationEmptyCombinationMahjong() {
+        cards.add(new Card(Card.MAHJONG, 1));
+
+        one = new CardCombination(CardCombination.SINGLE, cards.get(0).getRank(), cards);
+
+        assertEquals(true, one.isStrongerThan(null));
     }
 
     @Test

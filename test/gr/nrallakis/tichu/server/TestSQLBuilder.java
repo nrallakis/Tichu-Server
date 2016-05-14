@@ -1,11 +1,12 @@
-package gr.nrallakis.tichu.server.tests;
+package gr.nrallakis.tichu.server;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import gr.nrallakis.tichu.server.database.SQLBuilder;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestSQLBuilder {
 
@@ -57,7 +58,14 @@ public class TestSQLBuilder {
         assertEquals("SELECT X FROM X2 WHERE X3 == 'X4'", sql.getSQL());
     }
 
-
+    @Test
+    public void testBug1() {
+        String sql = new SQLBuilder()
+                .insertInto("ACCOUNTS")
+                .values("Guest-569", "10.05.2016 at 06:55", 1000, "569", 1, 0)
+                .getSQL();
+        assertEquals("INSERT INTO ACCOUNTS VALUES('Guest-569', '10.05.2016 at 06:55', 1000, '569', 1, 0)", sql);
+    }
 
 
 }

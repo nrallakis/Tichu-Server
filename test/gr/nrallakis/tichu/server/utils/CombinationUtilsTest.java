@@ -1,4 +1,4 @@
-package gr.nrallakis.tichu.server.tests;
+package gr.nrallakis.tichu.server.utils;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -9,12 +9,12 @@ import java.util.ArrayList;
 
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
-import gr.nrallakis.tichu.server.utils.CardCombinationUtils;
 import gr.nrallakis.tichu.server.game.InvalidCardCombinationException;
+import gr.nrallakis.tichu.server.utils.CardCombinationUtils;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestCombinationUtils {
+public class CombinationUtilsTest {
 
     private ArrayList<Card> hand;
 
@@ -45,7 +45,13 @@ public class TestCombinationUtils {
     }
 
     @Test
-    public void testFindCombination() throws InvalidCardCombinationException {
+    public void testFindCombination0() throws InvalidCardCombinationException {
+        hand.add(new Card(Card.BLUE, 2));
+        assertEquals(CardCombination.SINGLE, CardCombinationUtils.findCombination(hand).getType());
+    }
+
+    @Test
+    public void testFindCombination1() throws InvalidCardCombinationException {
         hand.add(new Card(Card.BLUE, 2));
         hand.add(new Card(Card.RED, 2));
         assertEquals(CardCombination.PAIR, CardCombinationUtils.findCombination(hand).getType());

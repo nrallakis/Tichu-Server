@@ -1,4 +1,4 @@
-package gr.nrallakis.tichu.server.tests;
+package gr.nrallakis.tichu.server.utils;
 
 import org.junit.After;
 import org.junit.Before;

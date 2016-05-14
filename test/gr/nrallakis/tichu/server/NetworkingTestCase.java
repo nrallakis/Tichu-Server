@@ -1,4 +1,4 @@
-package gr.nrallakis.tichu.server.tests;
+package gr.nrallakis.tichu.server;
 
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.minlog.Log;

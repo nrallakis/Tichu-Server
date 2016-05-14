@@ -10,6 +10,9 @@ public class CardCombinationUtils {
 
     public static CardCombination findCombination(List<Card> sCards) throws InvalidCardCombinationException {
         final int scalar = 2;
+        if (sCards.size() == 1) {
+            return new CardCombination(CardCombination.SINGLE, sCards.get(0).getRank()*scalar, sCards);
+        }
         if (isPair(sCards)) {
             return new CardCombination(CardCombination.PAIR, sCards.get(0).getRank()*scalar, sCards);
         }

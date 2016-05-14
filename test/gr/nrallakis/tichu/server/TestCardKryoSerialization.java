@@ -1,17 +1,18 @@
-package gr.nrallakis.tichu.server.tests;
+package gr.nrallakis.tichu.server;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import gr.nrallakis.tichu.server.game.Card;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestCardKryoSerialization extends TichuTestCase {
 
@@ -43,4 +44,5 @@ public class TestCardKryoSerialization extends TichuTestCase {
         assertEquals(cardBefore.getType(), cardAfter.getType());
         assertEquals(cardBefore.getRank(), cardAfter.getRank());
     }
+
 }
