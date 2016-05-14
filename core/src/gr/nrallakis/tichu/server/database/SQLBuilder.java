@@ -1,5 +1,7 @@
 package gr.nrallakis.tichu.server.database;
 
+/** A simple to use String appender to make sql
+ *  statements avoiding hard-coded Strings*/
 public class SQLBuilder {
 
     private StringBuilder sqlBuilder;
@@ -30,7 +32,7 @@ public class SQLBuilder {
                 sqlBuilder.append(obj.toString());
                 sqlBuilder.append("'");
             }
-            else if (obj == (int)obj) {
+            else if (obj == (int)obj || obj instanceof Integer) {
                 sqlBuilder.append((int) obj);
             }
             sqlBuilder.append(", ");
@@ -63,6 +65,7 @@ public class SQLBuilder {
         return this;
     }
 
+    /** Returns the created sql statement */
     public String getSQL() {
         String sql = sqlBuilder.toString();
         if (sql.endsWith(" ")) {
