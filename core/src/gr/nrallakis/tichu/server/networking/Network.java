@@ -1,14 +1,15 @@
 package gr.nrallakis.tichu.server.networking;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.serializers.DefaultArraySerializers;
+import com.esotericsoftware.kryo.serializers.DefaultArraySerializers.ObjectArraySerializer;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import gr.nrallakis.tichu.server.networking.GamePackets.*;
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
 import gr.nrallakis.tichu.server.game.GameConnection;
+import gr.nrallakis.tichu.server.game.Player;
+import gr.nrallakis.tichu.server.networking.GamePackets.*;
 
 public class Network {
 
@@ -49,12 +50,23 @@ public class Network {
         kryo.register(CardCombination.class);
         kryo.register(GameConnection.class);
         kryo.register(PlayerToPlayFirst.class);
+        kryo.register(Player.class);
+        kryo.register(ExchangeCards.class);
+        kryo.register(StartExchange.class);
+        kryo.register(PlayerDealtCards.class);
 
-        DefaultArraySerializers.ObjectArraySerializer cardArraySerializer
-                = new DefaultArraySerializers.ObjectArraySerializer(kryo, Card[].class);
+        ObjectArraySerializer cardArraySerializer
+                = new ObjectArraySerializer(kryo, Card[].class);
         cardArraySerializer.setElementsCanBeNull(false);
         cardArraySerializer.setElementsAreSameType(true);
         kryo.register(Card[].class, cardArraySerializer);
+
+        ObjectArraySerializer playerArraySerializer
+                = new ObjectArraySerializer(kryo, Player[].class);
+        cardArraySerializer.setElementsCanBeNull(false);
+        cardArraySerializer.setElementsAreSameType(true);
+        kryo.register(Player[].class, playerArraySerializer);
+
         ObjectSpace.registerClasses(kryo);
     }
 }

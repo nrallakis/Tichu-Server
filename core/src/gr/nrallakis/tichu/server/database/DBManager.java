@@ -58,7 +58,10 @@ public class DBManager {
     }
 
     public boolean executeUpdate(String sql) {
+        if (sql == null)
+            throw new IllegalArgumentException("Sql parameter cannot be null");
         try {
+            System.out.println(sql);
             sqlConnection.prepareStatement(sql).executeUpdate();
             return true;
         } catch (SQLException e) {

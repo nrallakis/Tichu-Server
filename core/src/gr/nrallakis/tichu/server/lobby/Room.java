@@ -3,14 +3,13 @@ package gr.nrallakis.tichu.server.lobby;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.rmi.ObjectSpace;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
-import gr.nrallakis.tichu.server.networking.Packets;
 import gr.nrallakis.tichu.server.game.Game;
 import gr.nrallakis.tichu.server.game.GameConnection;
 import gr.nrallakis.tichu.server.game.Player;
+import gr.nrallakis.tichu.server.networking.Packets.GameStarted;
+import gr.nrallakis.tichu.server.networking.Packets.RoomPlayers;
 
 public class Room {
 
@@ -30,58 +29,23 @@ public class Room {
         this.name = roomProperties.name;
         this.winningScore = roomProperties.winningScore;
         this.timeToPlay = roomProperties.secondsToPlay;
-        this.players = new Player[4];
-        this.id = ++nextId;
+        this.id = nextId++;
         this.objectSpace = new ObjectSpace();
+        this.players = new Player[4];
     }
 
     /** Adds a player to the room and the objectSpace connection. */
-    public void addPlayer(Player player) {
-        if (getPlayerCount() < 4) {
-            if (players[0] == null) players[0] = player;
-            else if (players[1] == null) players[1] = player;
-            else if (players[2] == null) players[2] = player;
-            else if (players[3] == null) players[3] = player;
-            objectSpace.addConnection(player.getConnection());
+    public boolean addPlayer(Player player) {
+        if (isFull()) return false;
+        for (int i = 0; i < 4; i++) {
+            if (players[i] == null) {
+                players[i] = player;
+                break;
+            }
         }
-    }
-
-    /** Sends the room players status to each player on the room */
-    public void updatePlayerStates() {
-        for (int playerIndex = 0; playerIndex < players.length; playerIndex++) {
-            Player player = players[playerIndex];
-            if (player == null) continue;
-            sendRoomPlayersTo(playerIndex);
-        }
-    }
-
-    /** Sends all the players excluding the receiver
-     * The json is sent to the orientation of the player */
-    private void sendRoomPlayersTo(int playerIndex) {
-        Player[] tempPlayers = getPlayersExcluding(playerIndex);
-        Packets.RoomPlayers packet = new Packets.RoomPlayers();
-
-        Player rightPlayer = tempPlayers[0];
-        if (rightPlayer != null) {
-            packet.rightPlayerJson = rightPlayer.toJson();
-        }
-        Player topPlayer = tempPlayers[1];
-        if (topPlayer != null) {
-            packet.topPlayerJson = topPlayer.toJson();
-        }
-        Player leftPlayer = tempPlayers[2];
-        if (leftPlayer != null) {
-            packet.leftPlayerJson = leftPlayer.toJson();
-        }
-
-        players[playerIndex].sendPacket(packet);
-    }
-
-    private Player[] getPlayersExcluding(int playerIndex) {
-        ArrayList<Player> playerList = new ArrayList<>(Arrays.asList(players));
-        Collections.rotate(playerList, -playerIndex);
-        playerList.remove(0);
-        return playerList.toArray(new Player[3]);
+        objectSpace.addConnection(player.getConnection());
+        System.out.println(Arrays.toString(players));
+        return true;
     }
 
     public void removePlayer(Connection playerConnection) {
@@ -92,6 +56,17 @@ public class Room {
             }
         }
         objectSpace.removeConnection(playerConnection);
+    }
+
+    /** Sends the room players status to each player on the room */
+    public void onPlayersChanged() {
+        RoomPlayers packet = new RoomPlayers();
+        packet.players = players;
+        System.out.println(Arrays.toString(players));
+        for (Player player : players) {
+            if (player == null) continue;
+            player.sendPacket(packet);
+        }
     }
 
     /** Sets a player ready. When all players are ready
@@ -106,11 +81,17 @@ public class Room {
                 player.setReady(true);
             }
         }
-
-        for (Player player : players) {
-            if (player == null || player.isNotReady()) return;
+        if (allPlayersReady()) {
+            startGame();
         }
-        startGame();
+    }
+
+    private boolean allPlayersReady() {
+        for (Player p : players) {
+            if (p == null) return false;
+            if (!p.isReady()) return false;
+        }
+        return true;
     }
 
     /** Starts the game, initializes the game object
@@ -120,26 +101,12 @@ public class Room {
         game = new Game(players);
         GameConnection remoteConnection = game;
         objectSpace.register(id, remoteConnection);
-        Packets.GameStarted packet = new Packets.GameStarted();
+        GameStarted packet = new GameStarted();
         packet.gameConnectionId = id;
         for (Player player : players) {
-            ArrayList<String> playerIds = getPlayerIdsExcluding(player.getId());
-            packet.playerIds = playerIds.toArray(new String[3]);
             player.sendPacket(packet);
         }
         game.startGame();
-    }
-
-    private ArrayList<String> getPlayerIdsExcluding(String playerId) {
-        ArrayList<String> playerIds = new ArrayList<>(4);
-        for (Player p : players) {
-            playerIds.add(p.getId());
-        }
-        //Push the receiver to the start and remove him.
-        int receiverIndex = playerIds.indexOf(playerId);
-        Collections.rotate(playerIds, -receiverIndex);
-        playerIds.remove(0);
-        return playerIds;
     }
 
     public Game getGame() {
