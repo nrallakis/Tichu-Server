@@ -6,9 +6,9 @@ import com.esotericsoftware.kryonet.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-import gr.nrallakis.tichu.server.networking.TichuServer;
 import gr.nrallakis.tichu.server.lobby.Room;
 import gr.nrallakis.tichu.server.lobby.RoomSerializer;
+import gr.nrallakis.tichu.server.networking.TichuServer;
 
 public class RoomManager {
 
@@ -39,6 +39,7 @@ public class RoomManager {
 
     public Room getRoomContaining(Connection connection) {
         String id = connection.toString();
+        System.out.println(rooms.size());
         for (Room room : rooms) {
             if (room.contains(id)) return room;
         }

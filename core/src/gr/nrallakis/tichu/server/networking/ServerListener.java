@@ -29,7 +29,7 @@ public class ServerListener extends Listener {
             Room room = rooms.get(roomIndex);
             if (room.contains(connection.toString())) {
                 room.removePlayer(connection);
-                room.updatePlayerStates();
+                room.onPlayersChanged();
                 if (room.isEmpty()) {
                     server.getRoomManager().removeRoom(roomIndex);
                 }

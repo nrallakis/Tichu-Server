@@ -1,7 +1,6 @@
 package gr.nrallakis.tichu.server.networking;
 
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;

@@ -1,6 +1,8 @@
 package gr.nrallakis.tichu.server.networking;
 
 
+import gr.nrallakis.tichu.server.game.Player;
+
 public class Packets {
 
     public static class CreateRoom extends Packets {
@@ -59,7 +61,7 @@ public class Packets {
     }
 
     public static class RoomPlayers extends Packets {
-        public String rightPlayerJson, topPlayerJson, leftPlayerJson;
+        public Player[] players;
     }
 
     public static class GetRoomPlayers extends Packets {}

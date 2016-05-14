@@ -38,19 +38,14 @@ public class PacketHandler {
         else if (object instanceof Packets.GetRoomPlayers) {
             getRoomPlayers(connection, (Packets.GetRoomPlayers) object);
         }
-        else if (object instanceof GamePackets.GiveCards) {
-            receivedCards((GamePackets.GiveCards) object);
-        }
-    }
-
-    private void receivedCards(GamePackets.GiveCards object) {
-        
     }
 
     private void getRoomPlayers(Connection connection, Packets.GetRoomPlayers object) {
         Room roomToGetPlayers = server.getRoomManager()
                 .getRoomContaining(connection);
-        roomToGetPlayers.updatePlayerStates();
+        System.out.println(connection.toString());
+        System.out.println(roomToGetPlayers);
+        roomToGetPlayers.onPlayersChanged();
     }
 
     private void getRooms(Connection connection) {
@@ -72,7 +67,7 @@ public class PacketHandler {
             accepted = false;
         } else {
             room.addPlayer(new Player(connection));
-            room.updatePlayerStates();
+            room.onPlayersChanged();
             accepted = true;
             server.roomListUpdated();
         }

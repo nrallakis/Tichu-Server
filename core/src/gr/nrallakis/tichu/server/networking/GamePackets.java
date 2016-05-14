@@ -25,9 +25,20 @@ public class GamePackets {
 
     public static class PlayerBombed {
         public String playerId;
+        public CardCombination bomb;
     }
 
     public static class PlayerToPlayFirst {
+        public String playerId;
+    }
+
+    public static class StartExchange {}
+
+    public static class ExchangeCards {
+        public Card[] cards;
+    }
+
+    public static class PlayerDealtCards {
         public String playerId;
     }
 

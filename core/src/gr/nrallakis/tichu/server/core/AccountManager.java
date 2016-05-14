@@ -31,7 +31,7 @@ public class AccountManager {
      * Else if everything goes well, return null.
      *
      * @param username ex. Nicholas R.
-     * @param id       facebook id
+     * @param id the facebook id
      */
     public void registerAccount(String username, String id) {
         String date = new SimpleDateFormat("dd.MM.yyyy 'at' hh:mm").format(new Date());
