@@ -2,122 +2,118 @@ package gr.nrallakis.tichu.server.game;
 
 import com.badlogic.gdx.Gdx;
 
-import gr.nrallakis.tichu.server.networking.GamePackets;
+import gr.nrallakis.tichu.server.networking.GamePackets.*;
 
 public class GamePlayerUpdater {
 
-    private GamePlayer[] gamePlayers;
+    private Player[] players;
 
-    public GamePlayerUpdater(GamePlayer[] gamePlayers) {
-        this.gamePlayers = gamePlayers;
+    public GamePlayerUpdater(Player[] players) {
+        this.players = players;
     }
 
     /**
-     * Calls {@link GamePlayer#playerPassed()} on each remote
-     * game observer registered.
+     * Sends a playerPassed packet to each player
      */
     public void playerPassed() {
-        for (GamePlayer player : gamePlayers) {
-            player.playerPassed();
-        }
+         broadcast(new PlayerPassed());
     }
 
     /**
-     * Calls {@link GamePlayer#exchangedCardsReceived(Card[])} on each remote
-     * game observer registered.
-     */
-    public void exchangedCardsReceived(Card[] cards) {
-    }
-
-    /**
-     * Calls {@link GamePlayer#playerBombed(String, CardCombination)} on each remote
-     * game observer registered.
+     * Sends a playerBombed packet to each player
      */
     public void playerBombed(String playerId, CardCombination bomb) {
-        for (GamePlayer player : gamePlayers) {
-            player.playerBombed(playerId, bomb);
-        }
+        PlayerBombed packet = new PlayerBombed();
+        packet.playerId = playerId;
+        packet.bomb = bomb;
+        broadcast(packet);
     }
 
     /**
-     * Calls {@link GamePlayer#playerTichu(String)} on each remote
-     * game observer registered.
+     * Sends a playerTichu packet to each player
      */
     public void playerTichu(String playerId) {
-        for (GamePlayer player : gamePlayers) {
-            player.playerTichu(playerId);
-        }
+        PlayerTichu packet = new PlayerTichu();
+        packet.playerId = playerId;
+        broadcast(packet);
     }
 
     /**
-     * Calls {@link GamePlayer#playerGrandTichu(String)} on each remote
-     * game observer registered.
+     * Sends a playerGrandTichu packet to each player
      */
     public void playerGrandTichu(String playerId) {
-        for (GamePlayer player : gamePlayers) {
-            player.playerGrandTichu(playerId);
-        }
+        PlayerGrandTichu packet = new PlayerGrandTichu();
+        packet.playerId = playerId;
+        broadcast(packet);
     }
 
     /**
-     * Calls {@link GamePlayer#playerPlayedCards(CardCombination)} on each remote
-     * game observer registered.
+     * Sends a playerPlayedCards packet to each player
      */
     public void playerPlayedCards(CardCombination combination) {
-        for (GamePlayer player : gamePlayers) {
-            player.playerPlayedCards(combination);
-        }
+        PlayerPlayed packet = new PlayerPlayed();
+        packet.cardCombination = combination;
+        broadcast(packet);
     }
 
     /**
-     * Calls {@link GamePlayer#roundFinished(int[])} on each remote
+     * Calls {@link Player#roundFinished(int[])} on each remote
      * game observer registered.
      */
     public void roundFinished(int[] teamsScores) {
-        for (GamePlayer player : gamePlayers) {
+        for (Player player : players) {
             player.roundFinished(teamsScores);
         }
     }
 
     /**
-     * Calls {@link GamePlayer#roundStarted()} on each remote
+     * Calls {@link Player#roundStarted()} on each remote
      * game observer registered.
      */
     public void roundStarted() {
-        for (GamePlayer player : gamePlayers) {
+        for (Player player : players) {
             player.roundStarted();
         }
     }
 
     /**
-     * Calls {@link GamePlayer#gameFinished(int[])} on each remote
+     * Calls {@link Player#gameFinished(int[])} on each remote
      * game observer registered.
      */
     public void gameFinished(int[] teamsScores) {
-        for (GamePlayer player : gamePlayers) {
+        for (Player player : players) {
             player.gameFinished(teamsScores);
         }
     }
 
     /**
-     * Calls {@link GamePlayer#playerLeft(String)} on each remote
+     * Sends a playerHandsSize packet to each player
+     */
+    public void playerHandSize(String playerId, int size) {
+        PlayerDealtCards packet = new PlayerDealtCards();
+        packet.playerId = playerId;
+        broadcast(packet);
+    }
+
+    /**
+     * Calls {@link Player#playerLeft(String)} on each remote
      * game observer registered.
      */
     public void playerLeft(String playerId) {
-        for (GamePlayer player : gamePlayers) {
+        for (Player player : players) {
             player.playerLeft(playerId);
         }
     }
 
     public void broadcast(Object packet) {
-        for (GamePlayer gamePlayer : gamePlayers) {
-            gamePlayer.getConnection().sendTCP(packet);
+        for (Player Player : players) {
+            Player.getConnection().sendTCP(packet);
         }
     }
 
     public void playerPlaysFirst(String playerId) {
         Gdx.app.log("SERVER", "SENDING WHO PLAYS FIRST PACKET: " + playerId);
-        GamePackets.PlayerToPlayFirst packet = new GamePackets.PlayerToPlayFirst();
+        PlayerToPlayFirst packet = new PlayerToPlayFirst();
         packet.playerId = playerId;
         broadcast(packet);
     }
