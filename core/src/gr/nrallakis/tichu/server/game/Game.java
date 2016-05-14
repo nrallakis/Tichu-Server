@@ -3,6 +3,7 @@ package gr.nrallakis.tichu.server.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Timer;
 
+import gr.nrallakis.tichu.server.networking.GamePackets.ExchangeCards;
 import gr.nrallakis.tichu.server.networking.GamePackets.GiveCards;
 
 public class Game implements GameConnection {
@@ -22,7 +23,6 @@ public class Game implements GameConnection {
     private String lastPlayFrom;
 
     private GamePlayerUpdater gamePlayerUpdater;
-    private GameState currentState;
 
     public Game(Player[] players) {
         this.players = players;
@@ -40,7 +40,7 @@ public class Game implements GameConnection {
     public void startRound() {
         Gdx.app.log("SERVER", "Round started");
         round++;
-
+        lastCombination = null;  /** Empty combination */
         //Deal 8 cards to players
         dealEightCards();
 
@@ -68,12 +68,11 @@ public class Game implements GameConnection {
 
     private void dealEightCards() {
         Gdx.app.log("SERVER", "Dealing 8 cards");
-        currentState = GameState.CALL_FOR_GRAND;
         GiveCards packet = new GiveCards();
         for (Player player : players) {
             Card[] cards = deck.drawEightCards();
             packet.cards = cards;
-            player.getConnection().sendTCP(packet);
+            player.sendPacket(packet);
             player.addCards(cards);
         }
     }
@@ -87,15 +86,11 @@ public class Game implements GameConnection {
         cardsLeft.cards = theCards;
         player.addCards(theCards);
         player.sendPacket(cardsLeft);
-
-        if (allPlayersHaveAllCards()) {
-            Player playerToPlayFirst = findWhoPlaysFirst();
-            gamePlayerUpdater.playerPlaysFirst(playerToPlayFirst.getId());
-        }
+        gamePlayerUpdater.playerHandSize(playerId, 14);
     }
 
+    /** Increments turn (0-3) */
     private void nextTurn() {
-        //Increment turn (0-3)
         turn = ++turn % 4;
         turnPlayer = players[turn];
     }
@@ -103,6 +98,7 @@ public class Game implements GameConnection {
     @Override
     public void pass(String playerId) {
         if (!isPlayerTurn(playerId)) return;
+        gamePlayerUpdater.playerPassed();
         nextTurn();
         System.out.println("Player: " + playerId + " PASSED");
     }
@@ -130,27 +126,51 @@ public class Game implements GameConnection {
     public void exchangeThreeCards(String playerId, Card left, Card top, Card right) {
         int playerIndex = getPlayerIndex(playerId);
         switch (playerIndex) {
+            /** Put each card to the players orientation. (0:left, 1:top, 2:right) */
             case 0:
-                sendCard(players[1], right);
-                sendCard(players[2], top);
-                sendCard(players[3], left);
+                players[1].receivedExchangeCard(right, 0);
+                players[2].receivedExchangeCard(top, 1);
+                players[3].receivedExchangeCard(left, 2);
                 break;
             case 1:
-                sendCard(players[2], right);
-                sendCard(players[3], top);
-                sendCard(players[0], left);
+                players[2].receivedExchangeCard(right, 0);
+                players[3].receivedExchangeCard(top, 1);
+                players[0].receivedExchangeCard(left, 2);
                 break;
             case 2:
-                sendCard(players[3], right);
-                sendCard(players[0], top);
-                sendCard(players[1], left);
+                players[3].receivedExchangeCard(right, 0);
+                players[0].receivedExchangeCard(top, 1);
+                players[1].receivedExchangeCard(left, 2);
                 break;
             case 3:
-                sendCard(players[0], right);
-                sendCard(players[1], top);
-                sendCard(players[2], left);
+                players[0].receivedExchangeCard(right, 0);
+                players[1].receivedExchangeCard(top, 1);
+                players[2].receivedExchangeCard(left, 2);
                 break;
         }
+
+        players[playerIndex].setHasExchanged(true);
+        players[playerIndex].removeCards(left, top, right);
+        if (allPlayersHaveExchanged()) {
+            sendExchangeCardsToEachPlayer();
+            Player playerPlaying = findWhoPlaysFirst();
+            gamePlayerUpdater.playerPlaysFirst(playerPlaying.getId());
+            setTurn(playerPlaying);
+        }
+    }
+
+    private void sendExchangeCardsToEachPlayer() {
+        Gdx.app.log("DEBUG", "PLAYER: before sending the cards");
+        ExchangeCards exchangeCards = new ExchangeCards();
+        for (Player player : players) {
+            exchangeCards.cards = player.getExchangeCardsReceived();
+            player.sendPacket(exchangeCards);
+        }
+        Gdx.app.log("DEBUG", "PLAYER: successfully sent exchange cards");
+    }
+
+    private void setTurn(Player player) {
+        this.turn = getPlayerIndex(player.getId());
     }
 
     @Override
@@ -163,11 +183,17 @@ public class Game implements GameConnection {
         }
     }
 
-
     private boolean allPlayersHaveAllCards() {
         for (Player player : players) {
             if (player.getHand().size() != 14)
                 return false;
+        }
+        return true;
+    }
+
+    private boolean allPlayersHaveExchanged() {
+        for (Player player : players) {
+            if (!player.hasExchanged()) return false;
         }
         return true;
     }
@@ -193,22 +219,20 @@ public class Game implements GameConnection {
         if (newCombination.isStrongerThan(lastCombination)) {
             lastCombination = newCombination;
             gamePlayerUpdater.playerPlayedCards(newCombination);
+            player.removeCards(newCombination.getCards());
+            nextTurn();
         }
-        player.removeCards(newCombination.getCards());
-        nextTurn();
+        System.out.println("Current combination: " + lastCombination.getCards().get(0).getRank() + " "
+        + lastCombination.getCards().get(0).getType());
     }
 
-    public GamePlayerUpdater getGamePlayerUpdater() {
-        return gamePlayerUpdater;
-    }
-
-    private Player getPlayer(String playerId) {
+    private Player getPlayer(String connectionId) {
         for (Player player : players) {
-            if (player.getId().equals(playerId)) {
+            if (player.getId().equals(connectionId)) {
                 return player;
             }
         }
-        throw new IllegalArgumentException("No player exists with id: " + playerId);
+        throw new IllegalArgumentException("No player exists with id: " + connectionId);
     }
 
     private int getPlayerIndex(String playerId) {

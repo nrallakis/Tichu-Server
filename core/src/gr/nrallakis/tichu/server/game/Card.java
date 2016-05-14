@@ -9,8 +9,7 @@ import com.esotericsoftware.kryo.io.Output;
  * Represents a single card with a rank and a type
  * Immutable class
  */
-
-public final class Card implements Comparable<Card>, KryoSerializable {
+public final class Card implements KryoSerializable {
 
     public static final int GREEN = 0, RED = 1, BLUE = 2, BLACK = 3;
     public static final int J = 11, Q = 12, K = 13, A = 14;
@@ -49,15 +48,6 @@ public final class Card implements Comparable<Card>, KryoSerializable {
     }
 
     @Override
-    public int compareTo(Card c) {
-        if (this.rank > c.getRank()) return 1;
-        if (this.rank < c.getRank()) return -1;
-        if (this.rank == c.getRank() && this.type < c.getType()) return -1;
-        if (this.rank == c.getRank() && this.type > c.getType()) return 1;
-        return 0;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -88,6 +78,27 @@ public final class Card implements Comparable<Card>, KryoSerializable {
     public void read(Kryo kryo, Input input) {
         this.rank = input.readInt();
         this.type = input.readInt();
+    }
+
+    public static boolean isPhoenix(Card card) {
+        return card.type == PHOENIX;
+    }
+
+    public static boolean isDragon(Card card) {
+        return card.type == DRAGON;
+    }
+
+    public static boolean isDogs(Card card) {
+        return card.type == DOGS;
+    }
+
+    public static boolean isMahjong(Card card) {
+        return card.type == MAHJONG;
+    }
+
+    public boolean isStrongerThan(Card card) {
+        if (card == null) return true;
+        return rank > card.getRank();
     }
 
     @Override

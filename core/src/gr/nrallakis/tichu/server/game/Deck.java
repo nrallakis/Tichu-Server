@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 public class Deck {
 
     private List<Card> cards;
@@ -24,18 +25,14 @@ public class Deck {
     }
 
     private void addSpecialCards() {
-        cards.add(new Card(Card.DOGS, 0));
+        cards.add(new Card(Card.DOGS, 1));
         cards.add(new Card(Card.MAHJONG, 1));
-        cards.add(new Card(Card.PHOENIX, -1));
+        cards.add(new Card(Card.PHOENIX, 0));
         cards.add(new Card(Card.DRAGON, 25));
     }
 
     private void shuffle() {
         Collections.shuffle(cards);
-    }
-
-    public Card drawCard() {
-        return cards.remove(0);
     }
 
     public Card[] drawSixCards() {
@@ -52,5 +49,9 @@ public class Deck {
             cards[i] = drawCard();
         }
         return cards;
+    }
+
+    public Card drawCard() {
+        return cards.remove(0);
     }
 }

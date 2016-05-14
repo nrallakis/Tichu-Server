@@ -2,7 +2,7 @@ package gr.nrallakis.tichu.server.game;
 
 /**
  * GameConnection is responsible for communicating with the game hosted on the server.
- * Note: All objects are passed as json strings
+ * Note: All objects are passed using kryo serialization
  */
 public interface GameConnection {
 
