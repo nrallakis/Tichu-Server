@@ -130,6 +130,10 @@ public class Game implements GameConnection {
     public void callTichu(String playerId) {
         Player player = getPlayer(playerId);
         if (player == null) return;
+
+        /** Make sure the player hasn't played any cards */
+        if (player.getHand().size() < 14) return;
+
         player.setBet(Bet.TICHU);
         gamePlayerUpdater.playerTichu(playerId);
         System.out.println("Player: " + playerId + " CALLED TICHU");
