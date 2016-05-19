@@ -20,4 +20,5 @@ public interface GameConnection {
 
     void dealCardsLeft(String playerId);
 
+    void receivedCards(String playerId);
 }
