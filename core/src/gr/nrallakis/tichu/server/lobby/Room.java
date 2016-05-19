@@ -40,6 +40,7 @@ public class Room {
         for (int i = 0; i < 4; i++) {
             if (players[i] == null) {
                 players[i] = player;
+                players[i].joinRoom(this);
                 break;
             }
         }
@@ -47,14 +48,15 @@ public class Room {
         return true;
     }
 
-    public void removePlayer(Connection playerConnection) {
+    public void removePlayer(Player player) {
         for (int i = 0; i < 4; i++) {
             if (players[i] == null) continue;
-            if (players[i].getId().equals(playerConnection.toString())) {
+            if (players[i].equals(player)) {
                 players[i] = null;
+                players[i].leftFromRoom();
             }
         }
-        objectSpace.removeConnection(playerConnection);
+        objectSpace.removeConnection(player.getConnection());
     }
 
     /** Sends the room players status to each player on the room */

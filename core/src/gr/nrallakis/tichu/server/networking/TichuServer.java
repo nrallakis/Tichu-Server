@@ -4,11 +4,12 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import gr.nrallakis.tichu.server.core.RoomManager;
 import gr.nrallakis.tichu.server.database.DBManager;
+import gr.nrallakis.tichu.server.game.Player;
 
 public class TichuServer {
 
@@ -17,8 +18,8 @@ public class TichuServer {
     private Server server;
     private RoomManager roomManager;
 
-    private List<Connection> lobbyPlayers;
-    private List<Connection> roomPlayers;
+    private Map<Connection, Player> lobbyPlayers;
+    private Map<Connection, Player> roomPlayers;
 
     public TichuServer() throws IOException {
         server = new Server();
@@ -27,8 +28,8 @@ public class TichuServer {
     }
 
     public void start() {
-        lobbyPlayers = new ArrayList<>();
-        roomPlayers = new ArrayList<>();
+        lobbyPlayers = new HashMap<>();
+        roomPlayers = new HashMap<>();
         roomManager = new RoomManager(this);
         server.start();
         server.addListener(new ServerListener(this));
@@ -39,14 +40,14 @@ public class TichuServer {
         return String.valueOf(DBManager.getInstance().nextId());
     }
 
-    public void addLobbyPlayer(Connection c) {
-        roomPlayers.remove(c);
-        lobbyPlayers.add(c);
+    public void addLobbyPlayer(Player p) {
+        roomPlayers.remove(p.getConnection());
+        lobbyPlayers.put(p.getConnection(), p);
     }
 
-    public void addRoomPlayer(Connection c) {
-        lobbyPlayers.remove(c);
-        roomPlayers.add(c);
+    public void addRoomPlayer(Player p) {
+        lobbyPlayers.remove(p.getConnection());
+        roomPlayers.put(p.getConnection(), p);
     }
 
     public void removePlayer(Connection connection) {
@@ -55,8 +56,8 @@ public class TichuServer {
     }
 
     public void sendPacketToLobby(Object packet) {
-        for (Connection c : lobbyPlayers) {
-            c.sendTCP(packet);
+        for (Player p : lobbyPlayers.values()) {
+            p.sendPacket(packet);
         }
     }
 
@@ -76,5 +77,13 @@ public class TichuServer {
 
     public int getPlayersCount() {
         return lobbyPlayers.size() + roomPlayers.size();
+    }
+
+    public Player getPlayer(Connection connection) {
+        Player player = lobbyPlayers.get(connection);
+        if (player == null) {
+            player = roomPlayers.get(connection);
+        }
+        return player;
     }
 }

@@ -3,8 +3,7 @@ package gr.nrallakis.tichu.server.networking;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import java.util.List;
-
+import gr.nrallakis.tichu.server.game.Player;
 import gr.nrallakis.tichu.server.lobby.Room;
 
 public class ServerListener extends Listener {
@@ -19,24 +18,17 @@ public class ServerListener extends Listener {
 
     @Override
     public void connected(Connection connection) {
-        server.addLobbyPlayer(connection);
+        server.addLobbyPlayer(new Player(connection));
     }
 
     @Override
     public void disconnected(Connection connection) {
-        List<Room> rooms = server.getRoomManager().getRooms();
-        for (int roomIndex = 0; roomIndex < rooms.size(); roomIndex++) {
-            Room room = rooms.get(roomIndex);
-            if (room.contains(connection.toString())) {
-                room.removePlayer(connection);
-                room.onPlayersChanged();
-                if (room.isEmpty()) {
-                    server.getRoomManager().removeRoom(roomIndex);
-                }
-                break;
-            }
+        Player player = server.getPlayer(connection);
+        Room room = player.getRoomJoinedTo();
+        room.removePlayer(player);
+        if (room.isEmpty()) {
+            server.getRoomManager().removeRoom(room);
         }
-        server.roomListUpdated();
         server.removePlayer(connection);
     }
 

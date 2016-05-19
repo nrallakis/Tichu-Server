@@ -3,7 +3,6 @@ package gr.nrallakis.tichu.server.networking;
 import com.esotericsoftware.kryonet.Connection;
 
 import gr.nrallakis.tichu.server.core.AccountManager;
-import gr.nrallakis.tichu.server.game.Player;
 import gr.nrallakis.tichu.server.lobby.Room;
 import gr.nrallakis.tichu.server.lobby.RoomProperties;
 
@@ -36,11 +35,11 @@ public class PacketHandler {
             getRooms(connection);
         }
         else if (object instanceof Packets.GetRoomPlayers) {
-            getRoomPlayers(connection, (Packets.GetRoomPlayers) object);
+            getRoomPlayers(connection);
         }
     }
 
-    private void getRoomPlayers(Connection connection, Packets.GetRoomPlayers object) {
+    private void getRoomPlayers(Connection connection) {
         Room roomToGetPlayers = server.getRoomManager()
                 .getRoomContaining(connection);
         System.out.println(connection.toString());
@@ -66,7 +65,7 @@ public class PacketHandler {
         if (room.isFull()) {
             accepted = false;
         } else {
-            room.addPlayer(new Player(connection));
+            room.addPlayer(server.getPlayer(connection));
             room.onPlayersChanged();
             accepted = true;
             server.roomListUpdated();
@@ -83,8 +82,8 @@ public class PacketHandler {
         properties.secondsToPlay = packet.timeToPlay;
 
         Room room = new Room(properties);
-        server.addRoomPlayer(connection);
-        room.addPlayer(new Player(connection));
+        server.addRoomPlayer(server.getPlayer(connection));
+        room.addPlayer(server.getPlayer(connection));
 
         server.getRoomManager().addRoom(room);
         server.roomListUpdated();

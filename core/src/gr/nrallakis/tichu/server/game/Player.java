@@ -11,18 +11,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import gr.nrallakis.tichu.server.core.AccountManager;
+import gr.nrallakis.tichu.server.lobby.Room;
 import gr.nrallakis.tichu.server.utils.CardSorter;
 
 public class Player implements KryoSerializable {
 
     private Connection connection;
 
-    private List<Card> hand;
     private Card[] exchangeCardsReceived;
+    private List<Card> hand;
     private Bet bet;
+
     private boolean isReady;
     private boolean hasExchanged;
     private boolean hasReceivedCards;
+
+    private Room roomJoinedTo;
 
     public Player(Connection connection) {
         this.connection = connection;
@@ -35,10 +39,12 @@ public class Player implements KryoSerializable {
         return connection.toString();
     }
 
+    /** Warning this method does a query */
     public int getPoints() {
         return AccountManager.getInstance().getAccountRankPoints(getId());
     }
 
+    /** Warning this method does a query */
     public String getName() {
         return AccountManager.getInstance().getAccountName(getId());
     }
@@ -52,6 +58,22 @@ public class Player implements KryoSerializable {
             hand.remove(card);
         }
         CardSorter.sortByRank(hand);
+    }
+
+    public void joinRoom(Room room) {
+        roomJoinedTo = room;
+    }
+
+    public boolean onRoom() {
+        return roomJoinedTo == null;
+    }
+
+    public Room getRoomJoinedTo() {
+        return roomJoinedTo;
+    }
+
+    public void leftFromRoom() {
+        roomJoinedTo = null;
     }
 
     public boolean hasMahjong() {
@@ -139,5 +161,21 @@ public class Player implements KryoSerializable {
         }
         System.out.println("Player: " + getId() + " has cards: " + string);
         return string.toString();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Player)) return false;
+        if (!(other.getClass().equals(this.getClass()))) return false;
+        Player otherPlayer = (Player) other;
+        return getId().equals(otherPlayer.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + getId().length();
+        return result;
     }
 }

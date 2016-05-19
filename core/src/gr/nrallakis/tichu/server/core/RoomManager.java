@@ -32,8 +32,8 @@ public class RoomManager {
         return null;
     }
 
-    public void removeRoom(int roomIndex) {
-        rooms.remove(roomIndex);
+    public void removeRoom(Room room) {
+        rooms.remove(room);
         server.roomListUpdated();
     }
 
