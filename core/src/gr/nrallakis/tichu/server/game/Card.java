@@ -11,7 +11,7 @@ import com.esotericsoftware.kryo.io.Output;
  */
 public final class Card implements KryoSerializable {
 
-    public static final int GREEN = 0, RED = 1, BLUE = 2, BLACK = 3;
+    public static final int BLACK = 0, BLUE = 1, GREEN = 2, RED = 3;
     public static final int J = 11, Q = 12, K = 13, A = 14;
     public static final int DRAGON = 10, PHOENIX = 11, DOGS = 12, MAHJONG = 13;
 
@@ -103,15 +103,19 @@ public final class Card implements KryoSerializable {
 
     @Override
     public String toString() {
+        if (isPhoenix(this)) return "Phoenix";
+        if (isDogs(this)) return "Dogs";
+        if (isDragon(this)) return "Dragon";
+        if (isMahjong(this)) return "Mahjong";
         switch (type) {
             case GREEN:
-                return "G" + rank;
+                return "Green-" + rank;
             case RED:
-                return "R" + rank;
+                return "Red-" + rank;
             case BLUE:
-                return "Bl" + rank;
+                return "Blue-" + rank;
             case BLACK:
-                return "B" + rank;
+                return "Black-" + rank;
         }
         return "";
     }
