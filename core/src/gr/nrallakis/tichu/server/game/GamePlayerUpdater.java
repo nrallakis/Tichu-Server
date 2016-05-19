@@ -56,34 +56,20 @@ public class GamePlayerUpdater {
         broadcast(packet);
     }
 
-    /**
-     * Calls {@link Player#roundFinished(int[])} on each remote
-     * game observer registered.
-     */
     public void roundFinished(int[] teamsScores) {
-        for (Player player : players) {
-            player.roundFinished(teamsScores);
-        }
+        //TODO: implement
     }
 
-    /**
-     * Calls {@link Player#roundStarted()} on each remote
-     * game observer registered.
-     */
     public void roundStarted() {
-        for (Player player : players) {
-            player.roundStarted();
-        }
+        //TODO: implement
     }
 
-    /**
-     * Calls {@link Player#gameFinished(int[])} on each remote
-     * game observer registered.
-     */
     public void gameFinished(int[] teamsScores) {
-        for (Player player : players) {
-            player.gameFinished(teamsScores);
-        }
+        //TODO: implement
+    }
+
+    public void playerLeft(String playerId) {
+        //TODO: implement
     }
 
     /**
@@ -95,19 +81,9 @@ public class GamePlayerUpdater {
         broadcast(packet);
     }
 
-    /**
-     * Calls {@link Player#playerLeft(String)} on each remote
-     * game observer registered.
-     */
-    public void playerLeft(String playerId) {
-        for (Player player : players) {
-            player.playerLeft(playerId);
-        }
-    }
-
     public void broadcast(Object packet) {
-        for (Player Player : players) {
-            Player.getConnection().sendTCP(packet);
+        for (Player player : players) {
+            player.sendPacket(packet);
         }
     }
 

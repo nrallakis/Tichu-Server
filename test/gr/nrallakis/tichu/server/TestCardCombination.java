@@ -10,6 +10,8 @@ import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestCardCombination {
 
@@ -89,7 +91,22 @@ public class TestCardCombination {
     }
 
     @Test
-    public void testIsStrongerWithSameValueCombinations() {
+    public void testIsStrongerPairCombinations() {
+        cards.add(new Card(Card.BLACK, Card.A));
+        cards.add(new Card(Card.RED, Card.A));
+
+        cards2.add(new Card(Card.GREEN, 2));
+        cards2.add(new Card(Card.BLUE, 2));
+
+        one = new CardCombination(CardCombination.PAIR, cards.get(0).getRank(), cards);
+        two = new CardCombination(CardCombination.PAIR, cards2.get(0).getRank(), cards2);
+
+        assertTrue(one.isStrongerThan(two));
+        assertFalse(two.isStrongerThan(one));
+    }
+
+    @Test
+    public void testIsStrongerPairWithSameValueCombinations() {
         cards.add(new Card(Card.BLACK, 2));
         cards.add(new Card(Card.RED, 2));
 
@@ -99,8 +116,8 @@ public class TestCardCombination {
         one = new CardCombination(CardCombination.PAIR, cards.get(0).getRank(), cards);
         two = new CardCombination(CardCombination.PAIR, cards2.get(0).getRank(), cards2);
 
-        assertEquals(false, one.isStrongerThan(two));
-        assertEquals(false, two.isStrongerThan(one));
+        assertFalse(one.isStrongerThan(two));
+        assertFalse(two.isStrongerThan(one));
     }
 
     @Test

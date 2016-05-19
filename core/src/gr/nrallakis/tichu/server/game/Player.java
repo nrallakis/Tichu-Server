@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import gr.nrallakis.tichu.server.core.AccountManager;
-import gr.nrallakis.tichu.server.networking.GamePackets;
+import gr.nrallakis.tichu.server.utils.CardSorter;
 
 public class Player implements KryoSerializable {
 
@@ -22,7 +22,7 @@ public class Player implements KryoSerializable {
     private Bet bet;
     private boolean isReady;
     private boolean hasExchanged;
-    private boolean hasBeenDealtCardsLeft;
+    private boolean hasReceivedCards;
 
     public Player(Connection connection) {
         this.connection = connection;
@@ -51,6 +51,7 @@ public class Player implements KryoSerializable {
         for (Card card : cards) {
             hand.remove(card);
         }
+        CardSorter.sortByRank(hand);
     }
 
     public boolean hasMahjong() {
@@ -66,27 +67,14 @@ public class Player implements KryoSerializable {
         return hand.containsAll(cards);
     }
 
+    public void receivedExchangeCard(Card card, int index) {
+        exchangeCardsReceived[index] = card;
+        addCards(card);
+    }
+
     public Card[] getExchangeCardsReceived() {
         return exchangeCardsReceived;
     }
-
-    public void receivedExchangeCard(Card card, int index) {
-        System.out.println("received card with index: " + index);
-        exchangeCardsReceived[index] = card;
-        hand.add(card);
-        printCards();
-    }
-
-    public void roundFinished(int[] teamsScores) {
-    }
-
-    public void roundStarted() {
-    }
-
-    public void gameFinished(int[] teamsScores) {
-    }
-
-    public void playerLeft(String playerId) {}
 
     public Bet getBet() {
         return bet;
@@ -110,6 +98,7 @@ public class Player implements KryoSerializable {
 
     public void addCards(Card...theCards) {
         hand.addAll(Arrays.asList(theCards));
+        CardSorter.sortByRank(hand);
     }
 
     public void removeCards(List<Card> cards) {
@@ -124,12 +113,12 @@ public class Player implements KryoSerializable {
         return hasExchanged;
     }
 
-    public void setHasBeenDealtCardsLeft(boolean hasBeenDealtCardsLeft) {
-        this.hasBeenDealtCardsLeft = hasBeenDealtCardsLeft;
+    public void setHasReceivedCards(boolean hasReceivedCards) {
+        this.hasReceivedCards = hasReceivedCards;
     }
 
-    public boolean hasBeenDealtCardsLeft() {
-        return hasBeenDealtCardsLeft;
+    public boolean hasReceivedCards() {
+        return hasReceivedCards;
     }
 
     @Override
@@ -142,12 +131,13 @@ public class Player implements KryoSerializable {
     @Override
     public void read(Kryo kryo, Input input) {}
 
-    private void printCards() {
+    public String printCards() {
         StringBuilder string = new StringBuilder();
         for (Card card : hand) {
             string.append(card.toString());
             string.append(" , ");
         }
         System.out.println("Player: " + getId() + " has cards: " + string);
+        return string.toString();
     }
 }

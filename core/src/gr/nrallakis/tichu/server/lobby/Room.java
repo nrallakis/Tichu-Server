@@ -44,7 +44,6 @@ public class Room {
             }
         }
         objectSpace.addConnection(player.getConnection());
-        System.out.println(Arrays.toString(players));
         return true;
     }
 
