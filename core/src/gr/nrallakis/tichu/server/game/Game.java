@@ -1,8 +1,10 @@
 package gr.nrallakis.tichu.server.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.Timer;
 
+import gr.nrallakis.tichu.server.networking.GamePackets;
 import gr.nrallakis.tichu.server.networking.GamePackets.ExchangeCards;
 import gr.nrallakis.tichu.server.networking.GamePackets.GiveCards;
 
@@ -46,7 +48,6 @@ public class Game implements GameConnection {
 
         //Start 1 minute timer
 
-        //Wait for Grand Tichu call
         //Deal 6 cards to players
         //Wait for players to exchange cards
         //Set turn to the player who has the mahjong
@@ -77,6 +78,23 @@ public class Game implements GameConnection {
         }
     }
 
+    /** Called when a client received the cards from the exchange */
+    @Override
+    public void receivedCards(String playerId) {
+        Player player = getPlayer(playerId);
+        player.setHasReceivedCards(true);
+        if (allPlayersHaveReceivedCards()) {
+            Player playerPlaying = findWhoPlaysFirst();
+            gamePlayerUpdater.playerPlaysFirst(playerPlaying.getId());
+            setTurn(playerPlaying);
+
+            GamePackets.StartPlayingCards packet = new GamePackets.StartPlayingCards();
+            packet.timeStarted = TimeUtils.nanoTime();
+            gamePlayerUpdater.broadcast(packet);
+
+        }
+    }
+
     @Override
     public void dealCardsLeft(String playerId) {
         Player player = getPlayer(playerId);
@@ -84,12 +102,17 @@ public class Game implements GameConnection {
         GiveCards cardsLeft = new GiveCards();
         Card[] theCards = deck.drawSixCards();
         cardsLeft.cards = theCards;
-        player.addCards(theCards);
         player.sendPacket(cardsLeft);
+
+        player.addCards(theCards);
+        System.out.println(player.getId() + " , " + player.getHand().size());
         gamePlayerUpdater.playerHandSize(playerId, 14);
+        if (allPlayersHaveFourteenCards()) {
+            gamePlayerUpdater.broadcast(new GamePackets.StartExchange());
+        }
     }
 
-    /** Increments turn (0-3) */
+    /** Increments turn (0-3) and update turnPlayer */
     private void nextTurn() {
         turn = ++turn % 4;
         turnPlayer = players[turn];
@@ -109,6 +132,7 @@ public class Game implements GameConnection {
         if (player == null) return;
         player.setBet(Bet.TICHU);
         gamePlayerUpdater.playerTichu(playerId);
+        System.out.println("Player: " + playerId + " CALLED TICHU");
     }
 
     @Override
@@ -119,12 +143,13 @@ public class Game implements GameConnection {
         if (player == null) return;
         player.setBet(Bet.GRAND_TICHU);
         gamePlayerUpdater.playerGrandTichu(playerId);
-        System.out.println("Player: " + playerId + " GRAND_TICHU");
+        System.out.println("Player: " + playerId + " CALLED GRAND TICHU");
     }
 
     @Override
     public void exchangeThreeCards(String playerId, Card left, Card top, Card right) {
         int playerIndex = getPlayerIndex(playerId);
+        Player sender = players[playerIndex];
         switch (playerIndex) {
             /** Put each card to the players orientation. (0:left, 1:top, 2:right) */
             case 0:
@@ -149,18 +174,18 @@ public class Game implements GameConnection {
                 break;
         }
 
-        players[playerIndex].setHasExchanged(true);
-        players[playerIndex].removeCards(left, top, right);
+        sender.removeCards(left, top, right);
+        sender.setHasExchanged(true);
         if (allPlayersHaveExchanged()) {
             sendExchangeCardsToEachPlayer();
-            Player playerPlaying = findWhoPlaysFirst();
-            gamePlayerUpdater.playerPlaysFirst(playerPlaying.getId());
-            setTurn(playerPlaying);
+            for (Player p : players) {
+                System.out.println("Player: " + p.getId() + " hand: " + p.printCards());
+            }
         }
+        System.out.println("Player: " + playerId + " EXCHANGED CARDS");
     }
 
     private void sendExchangeCardsToEachPlayer() {
-        Gdx.app.log("DEBUG", "PLAYER: before sending the cards");
         ExchangeCards exchangeCards = new ExchangeCards();
         for (Player player : players) {
             exchangeCards.cards = player.getExchangeCardsReceived();
@@ -181,9 +206,10 @@ public class Game implements GameConnection {
             turn = playerIndex;
             gamePlayerUpdater.playerBombed(playerId, combination);
         }
+        System.out.println("Player: " + playerId + " BOMBED");
     }
 
-    private boolean allPlayersHaveAllCards() {
+    private boolean allPlayersHaveFourteenCards() {
         for (Player player : players) {
             if (player.getHand().size() != 14)
                 return false;
@@ -194,6 +220,13 @@ public class Game implements GameConnection {
     private boolean allPlayersHaveExchanged() {
         for (Player player : players) {
             if (!player.hasExchanged()) return false;
+        }
+        return true;
+    }
+
+    private boolean allPlayersHaveReceivedCards() {
+        for (Player player : players) {
+            if (!player.hasReceivedCards()) return false;
         }
         return true;
     }
@@ -222,8 +255,10 @@ public class Game implements GameConnection {
             player.removeCards(newCombination.getCards());
             nextTurn();
         }
-        System.out.println("Current combination: " + lastCombination.getCards().get(0).getRank() + " "
-        + lastCombination.getCards().get(0).getType());
+        System.out.println("Player: " + playerId + " PLAYED CARDS ");
+        for (Card c : newCombination.getCards()) {
+            System.out.print(c + " ");
+        }
     }
 
     private Player getPlayer(String connectionId) {
