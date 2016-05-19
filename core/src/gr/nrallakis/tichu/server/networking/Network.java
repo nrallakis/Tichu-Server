@@ -53,6 +53,7 @@ public class Network {
         kryo.register(Player.class);
         kryo.register(ExchangeCards.class);
         kryo.register(StartExchange.class);
+        kryo.register(StartPlayingCards.class);
         kryo.register(PlayerDealtCards.class);
 
         ObjectArraySerializer cardArraySerializer

@@ -42,4 +42,8 @@ public class GamePackets {
         public String playerId;
     }
 
+    public static class StartPlayingCards {
+        public long timeStarted;
+    }
+
 }
