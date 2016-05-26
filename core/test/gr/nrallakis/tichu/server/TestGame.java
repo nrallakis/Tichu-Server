@@ -1,5 +1,7 @@
 package gr.nrallakis.tichu.server;
 
+import com.esotericsoftware.kryonet.Connection;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,22 +10,26 @@ import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.Game;
 import gr.nrallakis.tichu.server.game.Player;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestGame {
-
-    private static final int PLAYER_WITH_MAHJONG = 0;
 
     Player[] players;
     Game game;
 
     @Before
     public void setUp() {
+        Connection connection = mock(Connection.class);
         players = new Player[4];
         for (int i = 0; i < 4; i++) {
-            players[i] = new Player(null);
+            players[i] = new Player(connection);
+            when(connection.toString()).thenReturn("" + i);
         }
+
         game = new Game(players);
+
     }
 
     @After
@@ -62,6 +68,6 @@ public class TestGame {
         c4[13] = new Card(Card.PHOENIX, 1);
         players[3].addCards(c4);
 
-        assertTrue(players[0].toString().equals(game.findWhoPlaysFirst().toString()));
+        assertEquals(players[0], game.findWhoPlaysFirst());
     }
 }
