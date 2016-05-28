@@ -52,8 +52,8 @@ public class Room {
         for (int i = 0; i < 4; i++) {
             if (players[i] == null) continue;
             if (players[i].equals(player)) {
-                players[i] = null;
                 players[i].leftFromRoom();
+                players[i] = null;
             }
         }
         objectSpace.removeConnection(player.getConnection());

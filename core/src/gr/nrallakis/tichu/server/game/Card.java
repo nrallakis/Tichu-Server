@@ -30,15 +30,6 @@ public final class Card implements KryoSerializable {
         return rank == 15;
     }
 
-    public int getSpecialType() {
-        if (rank != 15) return 0;
-        if (type == GREEN) return DRAGON;
-        if (type == RED) return PHOENIX;
-        if (type == BLUE) return DOGS;
-        if (type == BLACK) return MAHJONG;
-        return 0;
-    }
-
     public int getType() {
         return type;
     }
@@ -80,20 +71,20 @@ public final class Card implements KryoSerializable {
         this.type = input.readInt();
     }
 
-    public static boolean isPhoenix(Card card) {
-        return card.type == PHOENIX;
+    public boolean isPhoenix() {
+        return type == PHOENIX;
     }
 
-    public static boolean isDragon(Card card) {
-        return card.type == DRAGON;
+    public boolean isDragon() {
+        return type == DRAGON;
     }
 
-    public static boolean isDogs(Card card) {
-        return card.type == DOGS;
+    public boolean isDogs() {
+        return type == DOGS;
     }
 
-    public static boolean isMahjong(Card card) {
-        return card.type == MAHJONG;
+    public boolean isMahjong() {
+        return type == MAHJONG;
     }
 
     public boolean isStrongerThan(Card card) {
@@ -103,10 +94,10 @@ public final class Card implements KryoSerializable {
 
     @Override
     public String toString() {
-        if (isPhoenix(this)) return "Phoenix";
-        if (isDogs(this)) return "Dogs";
-        if (isDragon(this)) return "Dragon";
-        if (isMahjong(this)) return "Mahjong";
+        if (isPhoenix()) return "Phoenix";
+        if (isDogs()) return "Dogs";
+        if (isDragon()) return "Dragon";
+        if (isMahjong()) return "Mahjong";
         switch (type) {
             case GREEN:
                 return "Green-" + rank;
