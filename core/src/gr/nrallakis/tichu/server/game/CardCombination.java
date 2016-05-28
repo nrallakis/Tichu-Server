@@ -104,6 +104,15 @@ public final class CardCombination implements KryoSerializable {
     }
 
     @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Card card : cards) {
+            builder.append(card);
+        }
+        return builder.toString();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof CardCombination)) return false;
         CardCombination other = (CardCombination) obj;
