@@ -32,14 +32,13 @@ public class SQLBuilder {
                 sqlBuilder.append(obj.toString());
                 sqlBuilder.append("'");
             }
-            else if (obj == (int)obj || obj instanceof Integer) {
+            else if (obj instanceof Integer) {
                 sqlBuilder.append((int) obj);
             }
             sqlBuilder.append(", ");
         }
         // Delete the last comma and whitespace appended
-        sqlBuilder.deleteCharAt(sqlBuilder.length()-2);
-        sqlBuilder.deleteCharAt(sqlBuilder.length()-1);
+        sqlBuilder.delete(sqlBuilder.length()-2, sqlBuilder.length());
         sqlBuilder.append(") ");
         return this;
     }
@@ -66,7 +65,7 @@ public class SQLBuilder {
     }
 
     /** Returns the created sql statement */
-    public String getSQL() {
+    public String build() {
         String sql = sqlBuilder.toString();
         if (sql.endsWith(" ")) {
             sql = sql.substring(0, sql.length()-1);

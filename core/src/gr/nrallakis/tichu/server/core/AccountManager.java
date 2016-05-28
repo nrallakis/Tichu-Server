@@ -27,8 +27,7 @@ public class AccountManager {
     }
 
     /**
-     * If an error occurs, return a string representing.
-     * Else if everything goes well, return null.
+     * Registers an account to the db.
      *
      * @param username ex. Nicholas R.
      * @param id the facebook id
@@ -38,7 +37,7 @@ public class AccountManager {
         String update = new SQLBuilder()
                 .insertInto("ACCOUNTS")
                 .values(username, date, DEFAULT_POINTS, id, DEFAULT_LEVEL, DEFAULT_XP)
-                .getSQL();
+                .build();
         dbManager.executeUpdate(update);
     }
 
@@ -59,7 +58,7 @@ public class AccountManager {
 
     private boolean isAccountRegistered(String accountId) {
         try {
-            String query = new SQLBuilder().select("ID").from("ACCOUNTS").where("ID").equal(accountId).getSQL();
+            String query = new SQLBuilder().select("ID").from("ACCOUNTS").where("ID").equal(accountId).build();
             ResultSet rs = dbManager.executeQuery(query);
             if (rs.next()) {
                 return true;
@@ -72,7 +71,7 @@ public class AccountManager {
 
     public int getAccountRankPoints(String accountId) {
         try {
-            String query = new SQLBuilder().select("RANK_POINTS").from("ACCOUNTS").where("ID").equal(accountId).getSQL();
+            String query = new SQLBuilder().select("RANK_POINTS").from("ACCOUNTS").where("ID").equal(accountId).build();
             ResultSet rs = dbManager.executeQuery(query);
             rs.next();
             return rs.getInt("rank_points");
@@ -84,7 +83,7 @@ public class AccountManager {
 
     public String getAccountName(String accountId) {
         try {
-            String query = new SQLBuilder().select("USERNAME").from("ACCOUNTS").where("ID").equal(accountId).getSQL();
+            String query = new SQLBuilder().select("USERNAME").from("ACCOUNTS").where("ID").equal(accountId).build();
             ResultSet rs = dbManager.executeQuery(query);
             rs.next();
             return rs.getString("username");
