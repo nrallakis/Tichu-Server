@@ -160,8 +160,8 @@ public class CardCombinationUtils {
         int points = 0;
         for (Card card : cards) {
             if (card.isSpecial()) {
-                if (card.getSpecialType() == Card.DRAGON) points += 25;
-                if (card.getSpecialType() == Card.PHOENIX) points -= 25;
+                if (card.isDragon()) points += 25;
+                if (card.isPhoenix()) points -= 25;
             } else {
                 if (card.getRank() == 5) points += 5;
                 if (card.getRank() == 10) points += 10;
