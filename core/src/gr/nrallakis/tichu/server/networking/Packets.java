@@ -24,6 +24,8 @@ public class Packets {
     }
 
     public static class GameStarted extends Packets {
+        /** The time the playing state started in nanoseconds */
+        public long timeStarted;
         public int gameConnectionId;
         public String[] playerIds;
     }

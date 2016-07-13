@@ -84,6 +84,7 @@ public class Room {
         }
         if (allPlayersReady()) {
             startGame();
+            System.out.println("AllPlayersReady checked");
         }
     }
 
@@ -98,12 +99,16 @@ public class Room {
     /** Starts the game, initializes the game object
      * with the 4 players of the room and then informs them
      * that the game starts */
-    public void startGame() {
+    private void startGame() {
+        System.out.println("Starting game");
         game = new Game(players);
+
         GameConnection remoteConnection = game;
         objectSpace.register(id, remoteConnection);
+
         GameStarted packet = new GameStarted();
         packet.gameConnectionId = id;
+        packet.timeStarted = System.nanoTime();
         for (Player player : players) {
             player.sendPacket(packet);
         }

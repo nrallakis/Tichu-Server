@@ -32,7 +32,10 @@ public class GamePackets {
         public String playerId;
     }
 
-    public static class StartExchange {}
+    public static class StartExchange {
+        /** The time the playing state started in nanoseconds */
+        public long timeStarted;
+    }
 
     public static class ExchangeCards {
         public Card[] cards;

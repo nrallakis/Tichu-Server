@@ -1,5 +1,6 @@
 package gr.nrallakis.tichu.server.networking;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
 
@@ -84,6 +85,7 @@ public class TichuServer {
         if (player == null) {
             player = roomPlayers.get(connection);
         }
+        if (player == null) { Gdx.app.log("DEBUG", "Player still null"); }
         return player;
     }
 }
