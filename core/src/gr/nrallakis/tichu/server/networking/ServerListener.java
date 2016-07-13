@@ -24,7 +24,9 @@ public class ServerListener extends Listener {
     @Override
     public void disconnected(Connection connection) {
         Player player = server.getPlayer(connection);
+        if (player == null) return;
         Room room = player.getRoomJoinedTo();
+        if (room == null) return;
         room.removePlayer(player);
         if (room.isEmpty()) {
             server.getRoomManager().removeRoom(room);
