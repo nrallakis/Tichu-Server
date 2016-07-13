@@ -19,6 +19,7 @@ public class Player implements KryoSerializable {
     private Connection connection;
 
     private Card[] exchangeCardsReceived;
+    private List<Trick> tricksTaken;
     private List<Card> hand;
     private Bet bet;
 
@@ -32,6 +33,7 @@ public class Player implements KryoSerializable {
         this.connection = connection;
         this.bet = Bet.NONE;
         this.hand = new ArrayList<>(14);
+        this.tricksTaken = new ArrayList<>();
         this.exchangeCardsReceived = new Card[3];
     }
 

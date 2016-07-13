@@ -24,6 +24,8 @@ public class Game implements GameConnection {
     private CardCombination lastCombination;
     private String lastPlayFrom;
 
+    private Trick currentTrick;
+
     private GamePlayerUpdater gamePlayerUpdater;
 
     public Game(Player[] players) {
@@ -108,7 +110,9 @@ public class Game implements GameConnection {
         System.out.println(player.getId() + " , " + player.getHand().size());
         gamePlayerUpdater.playerHandSize(playerId, 14);
         if (allPlayersHaveFourteenCards()) {
-            gamePlayerUpdater.broadcast(new GamePackets.StartExchange());
+            GamePackets.StartExchange packet = new GamePackets.StartExchange();
+            packet.timeStarted = System.nanoTime();
+            gamePlayerUpdater.broadcast(packet);
         }
     }
 
@@ -251,6 +255,7 @@ public class Game implements GameConnection {
 
     @Override
     public void playCards(String playerId, CardCombination newCombination) {
+        System.out.println(playerId + " played: " + newCombination);
         Player player = getPlayer(playerId);
         if (!isPlayerTurn(player)) return;
         if (newCombination.isStrongerThan(lastCombination)) {
