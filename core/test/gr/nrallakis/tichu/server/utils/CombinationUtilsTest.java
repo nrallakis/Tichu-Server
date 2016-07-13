@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import gr.nrallakis.tichu.server.game.Card;
 import gr.nrallakis.tichu.server.game.CardCombination;
 import gr.nrallakis.tichu.server.game.InvalidCardCombinationException;
-import gr.nrallakis.tichu.server.utils.CardCombinationUtils;
 
 import static org.junit.Assert.assertEquals;
 

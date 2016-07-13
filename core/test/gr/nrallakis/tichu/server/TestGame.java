@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestGame {
+public class TestGame extends TichuTestCase {
 
     Player[] players;
     Game game;
@@ -69,5 +69,13 @@ public class TestGame {
         players[3].addCards(c4);
 
         assertEquals(players[0], game.findWhoPlaysFirst());
+    }
+
+    @Test
+    public void test8CardsAreDealtWhenGameStarts() {
+        game.startGame();
+        for (Player p : players) {
+            assertEquals(8, p.getHand().size());
+        }
     }
 }

@@ -1,4 +1,4 @@
-package gr.nrallakis.tichu.server.utils;
+package utils;
 
 import org.junit.After;
 import org.junit.Before;
@@ -63,15 +63,15 @@ public class TestCardSorter {
 
     @Test
     public void testSortByTypeGivenUnsortedCards() {
-        cards.add(new Card(Card.BLACK, 5));
-        cards.add(new Card(Card.BLUE, 7));
         cards.add(new Card(Card.RED, 8));
+        cards.add(new Card(Card.BLUE, 7));
+        cards.add(new Card(Card.BLACK, 5));
 
         CardSorter.sortByType(cards);
 
-        sorted.add(new Card(Card.RED, 8));
-        sorted.add(new Card(Card.BLUE, 7));
         sorted.add(new Card(Card.BLACK, 5));
+        sorted.add(new Card(Card.BLUE, 7));
+        sorted.add(new Card(Card.RED, 8));
 
         assertEquals(sorted, cards);
     }
@@ -79,14 +79,14 @@ public class TestCardSorter {
     @Test
     public void testSortByTypeGivenSortedCards() {
         cards.add(new Card(Card.RED, 8));
-        cards.add(new Card(Card.BLUE, 7));
         cards.add(new Card(Card.BLACK, 5));
+        cards.add(new Card(Card.BLUE, 7));
 
         CardSorter.sortByType(cards);
 
-        sorted.add(new Card(Card.RED, 8));
-        sorted.add(new Card(Card.BLUE, 7));
         sorted.add(new Card(Card.BLACK, 5));
+        sorted.add(new Card(Card.BLUE, 7));
+        sorted.add(new Card(Card.RED, 8));
 
         assertEquals(sorted, cards);
     }

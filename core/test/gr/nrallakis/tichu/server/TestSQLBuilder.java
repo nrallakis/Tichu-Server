@@ -25,37 +25,37 @@ public class TestSQLBuilder {
     @Test
     public void testSelectX() {
         sql.select("X");
-        assertEquals("SELECT X", sql.getSQL());
+        assertEquals("SELECT X", sql.build());
     }
 
     @Test
     public void testInsertIntoX() {
         sql.insertInto("X");
-        assertEquals("INSERT INTO X", sql.getSQL());
+        assertEquals("INSERT INTO X", sql.build());
     }
 
     @Test
     public void testWhereXEqualY() {
         sql.where("X").equal("Y");
-        assertEquals("WHERE X == 'Y'", sql.getSQL());
+        assertEquals("WHERE X == 'Y'", sql.build());
     }
 
     @Test
     public void testValuesAString5DString9() {
         sql.values("A", 5, "D", 9);
-        assertEquals("VALUES('A', " + 5 + ", 'D', 9)", sql.getSQL());
+        assertEquals("VALUES('A', " + 5 + ", 'D', 9)", sql.build());
     }
 
     @Test
     public void testGetSqlTrimsLastSpace() {
         sql.where("X");
-        assertEquals("WHERE X", sql.getSQL());
+        assertEquals("WHERE X", sql.build());
     }
 
     @Test
     public void testSelectXFromX2WhereX3EqualSX4String() {
         sql.select("X").from("X2").where("X3").equal("X4");
-        assertEquals("SELECT X FROM X2 WHERE X3 == 'X4'", sql.getSQL());
+        assertEquals("SELECT X FROM X2 WHERE X3 == 'X4'", sql.build());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class TestSQLBuilder {
         String sql = new SQLBuilder()
                 .insertInto("ACCOUNTS")
                 .values("Guest-569", "10.05.2016 at 06:55", 1000, "569", 1, 0)
-                .getSQL();
+                .build();
         assertEquals("INSERT INTO ACCOUNTS VALUES('Guest-569', '10.05.2016 at 06:55', 1000, '569', 1, 0)", sql);
     }
 
